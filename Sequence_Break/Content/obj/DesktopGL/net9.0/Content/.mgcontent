@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Profile>Reach</Profile>
+  <Platform>DesktopGL</Platform>
+  <Config />
+  <SourceFiles>
+    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Habitacion principal.png</File>
+    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Luka Specter adelante (pack de animaciones).png</File>
+    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Luka Specter derecha (pack de animacion).png</File>
+    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Luka Specter izquierda (pack de animacion).png</File>
+  </SourceFiles>
+  <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+  </DestFiles>
+</SourceFileCollection>

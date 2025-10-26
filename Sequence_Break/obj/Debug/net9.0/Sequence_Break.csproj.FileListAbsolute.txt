@@ -1,0 +1,43 @@
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Sequence_Break.exe
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Sequence_Break.deps.json
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Sequence_Break.runtimeconfig.json
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Sequence_Break.dll
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Sequence_Break.pdb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\MonoGame.Framework.dll
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\NVorbis.dll
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\android-arm\native\libopenal.so
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\android-arm64\native\libopenal.so
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\android-x64\native\libopenal.so
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\android-x86\native\libopenal.so
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\ios-arm64\native\libopenal.a
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\iossimulator-arm64\native\libopenal.a
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\iossimulator-x64\native\libopenal.a
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\linux-arm64\native\libopenal.so
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\linux-x64\native\libopenal.so
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\osx\native\libopenal.dylib
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\win-x64\native\openal.dll
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\linux-x64\native\libSDL2-2.0.so.0
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\osx\native\libSDL2-2.0.0.dylib
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\runtimes\win-x64\native\SDL2.dll
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\mgcb.tool.restore
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\Sequence_Break.csproj.AssemblyReference.cache
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\Sequence_Break.GeneratedMSBuildEditorConfig.editorconfig
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\Sequence_Break.AssemblyInfoInputs.cache
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\Sequence_Break.AssemblyInfo.cs
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\Sequence_Break.csproj.CoreCompileInputs.cache
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\Sequence_Break.sourcelink.json
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\Sequence.23DAFFF7.Up2Date
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\Sequence_Break.dll
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\refint\Sequence_Break.dll
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\Sequence_Break.pdb
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\Sequence_Break.genruntimeconfig.cache
+c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\ref\Sequence_Break.dll
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\MonoGameLibrary.dll
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\MonoGameLibrary.pdb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Habitacion principal.xnb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Luka Specter adelante (pack de animaciones).xnb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Luka Specter derecha (pack de animacion).xnb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Luka Specter izquierda (pack de animacion).xnb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter-front-atlas-definition.xml
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter-left-atlas-definition.xml
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter-right-atlas-definition.xml
