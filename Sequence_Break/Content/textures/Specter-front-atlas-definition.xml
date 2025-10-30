@@ -1,11 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas>
-  <Texture>textures/Luka Specter adelante (pack de animaciones)</Texture>
+  <Texture>textures/Specter_front</Texture>
   <Regions>
     <Region name="luka-front-1" x="0" y="0" width="22" height="40" />
-    <Region name="luka-front-2" x="22" y="0" width="22" height="40" />
+    <Region name="luka-front-2" x="22" y="1" width="22" height="38" />
     <Region name="luka-front-3" x="44" y="0" width="22" height="40" />
-    <Region name="luka-front-4" x="66" y="0" width="22" height="40" />
+    <Region name="luka-front-4" x="66" y="1" width="22" height="38" />
+    <Region name="luka-front-5" x="88" y="0" width="22" height="40" />
   </Regions>
   <Animations>
     <Animation name="luka-walk-front" delay="150">
@@ -13,6 +14,7 @@
       <Frame region="luka-front-2" />
       <Frame region="luka-front-3" />
       <Frame region="luka-front-4" />
+      <Frame region="luka-front-5" />
     </Animation>
   </Animations>
 </TextureAtlas>

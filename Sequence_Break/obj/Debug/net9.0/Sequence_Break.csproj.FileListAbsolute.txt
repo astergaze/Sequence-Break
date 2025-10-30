@@ -34,10 +34,12 @@ c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\Sequence_Break.genruntime
 c:\code\Sequence-Break\Sequence_Break\obj\Debug\net9.0\ref\Sequence_Break.dll
 c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\MonoGameLibrary.dll
 c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\MonoGameLibrary.pdb
-c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Habitacion principal.xnb
-c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Luka Specter adelante (pack de animaciones).xnb
-c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Luka Specter derecha (pack de animacion).xnb
-c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Luka Specter izquierda (pack de animacion).xnb
 c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter-front-atlas-definition.xml
 c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter-left-atlas-definition.xml
 c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter-right-atlas-definition.xml
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter-back-atlas-definition.xml
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter_back.xnb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter_front.xnb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter_left.xnb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter_right.xnb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter_room.xnb

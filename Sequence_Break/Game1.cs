@@ -13,6 +13,7 @@ public class Game1 : Core
     private AnimatedSprite _specterWalkFront;
     private AnimatedSprite _specterWalkLeft;
     private AnimatedSprite _specterWalkRight;
+    private AnimatedSprite _specterWalkBack;
 
     // To do: Add specter walk back when we get the animation thing
 
@@ -48,6 +49,13 @@ public class Game1 : Core
         );
         _specterWalkFront = atlasFront.CreateAnimatedSprite("luka-walk-front");
         _specterWalkFront.Scale = new Vector2(4.0f, 4.0f); // Adjust scale
+        //back
+        TextureAtlas atlasBack = TextureAtlas.FromFile(
+            Content,
+            "textures/Specter-back-atlas-definition.xml"
+        );
+        _specterWalkBack = atlasBack.CreateAnimatedSprite("luka-walk-back");
+        _specterWalkBack.Scale = new Vector2(4.0f, 4.0f);
         //left
         TextureAtlas atlasLeft = TextureAtlas.FromFile(
             Content,
@@ -63,7 +71,7 @@ public class Game1 : Core
         _specterWalkRight = atlasRight.CreateAnimatedSprite("luka-walk-right");
         _specterWalkRight.Scale = new Vector2(4.0f, 4.0f);
         //main room
-        _roomTexture = Content.Load<Texture2D>("textures/Habitacion principal");
+        _roomTexture = Content.Load<Texture2D>("textures/Specter_room");
         //Load game with specter looking to the front
         _specterCurrent = _specterWalkFront;
     }
@@ -107,7 +115,7 @@ public class Game1 : Core
         if (keyboardState.IsKeyDown(Keys.W) || keyboardState.IsKeyDown(Keys.Up))
         {
             _specterPosition.Y -= speed;
-            _specterCurrent = _specterWalkFront; // front for up
+            _specterCurrent = _specterWalkBack; // back for up
             _isMoving = true;
         }
 
@@ -115,7 +123,7 @@ public class Game1 : Core
         if (keyboardState.IsKeyDown(Keys.S) || keyboardState.IsKeyDown(Keys.Down))
         {
             _specterPosition.Y += speed;
-            _specterCurrent = _specterWalkFront; // to do: change this into _specterwalkback (we don't have it)
+            _specterCurrent = _specterWalkFront; // front for down
             _isMoving = true;
         }
 

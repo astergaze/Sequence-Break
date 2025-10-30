@@ -4,12 +4,14 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Habitacion principal.png</File>
-    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Luka Specter adelante (pack de animaciones).png</File>
-    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Luka Specter derecha (pack de animacion).png</File>
-    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Luka Specter izquierda (pack de animacion).png</File>
+    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_back.png</File>
+    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_front.png</File>
+    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_left.png</File>
+    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_right.png</File>
+    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_room.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

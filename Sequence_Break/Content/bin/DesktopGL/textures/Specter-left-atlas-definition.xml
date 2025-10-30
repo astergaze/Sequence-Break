@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas>
-  <Texture>textures/Luka Specter izquierda (pack de animacion)</Texture>
+  <Texture>textures/Specter_left</Texture>
   <Regions>
-    <Region name="luka-left-1" x="0" y="0" width="17" height="35" />
-    <Region name="luka-left-2" x="17" y="0" width="17" height="34" />
-    <Region name="luka-left-3" x="34" y="0" width="17" height="36" />
-    <Region name="luka-left-4" x="51" y="0" width="17" height="34" />
-    <Region name="luka-left-5" x="68" y="0" width="17" height="36" />
+    <Region name="luka-left-1" x="0" y="0" width="17" height="39" />
+    <Region name="luka-left-2" x="17" y="1" width="17" height="38" />
+    <Region name="luka-left-3" x="34" y="0" width="17" height="39" />
+    <Region name="luka-left-4" x="51" y="1" width="17" height="38" />
+    <Region name="luka-left-5" x="68" y="0" width="17" height="39" />
   </Regions>
   <Animations>
     <Animation name="luka-walk-left" delay="150">
