@@ -43,3 +43,5 @@ c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter_
 c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter_left.xnb
 c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter_right.xnb
 c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter_room.xnb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\fonts\BebasNeue.xnb
+c:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\fonts\IBMPlexMono.xnb

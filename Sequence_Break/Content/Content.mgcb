@@ -13,6 +13,20 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin fonts/BebasNeue.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/BebasNeue.spritefont
+
+#begin fonts/IBMPlexMono.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/IBMPlexMono.spritefont
+
 #begin textures/Specter_back.png
 /importer:TextureImporter
 /processor:TextureProcessor
