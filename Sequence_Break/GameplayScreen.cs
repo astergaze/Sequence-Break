@@ -41,6 +41,16 @@ namespace Sequence_Break
         // Lista de barreras de colision
         private List<Rectangle> _collisionBarriers;
 
+        //Objeto interactuable
+        private struct InteractableObject
+        {
+            public string Name;
+            public Rectangle TriggerZone;
+        }
+
+        //Lista de objetos interactuables
+        private List<InteractableObject> _interactableObjects;
+
         public GameplayScreen(Game1 game)
             : base(game) { }
 
@@ -96,6 +106,8 @@ namespace Sequence_Break
             _collisionBarriers = new List<Rectangle>();
             PopulateCollisionBarriers();
 
+            _interactableObjects = new List<InteractableObject>();
+            PopulateInteractableObjects();
             _previousKeyboardState = Keyboard.GetState();
         }
 
@@ -123,26 +135,94 @@ namespace Sequence_Break
             );
 
             // Objetos
+            //Cama
             _collisionBarriers.Add(
                 new Rectangle(mapX + (3 * scale), mapY + (78 * scale), 23 * scale, 47 * scale)
             );
+            //Escritorio izquierda
             _collisionBarriers.Add(
                 new Rectangle(mapX + (41 * scale), mapY + (4 * scale), 13 * scale, 35 * scale)
             );
+            //Escritorio Centro
             _collisionBarriers.Add(
                 new Rectangle(mapX + (55 * scale), mapY + (5 * scale), 22 * scale, 22 * scale)
             );
+            //Escritorio Derecha
             _collisionBarriers.Add(
                 new Rectangle(mapX + (77 * scale), mapY + (5 * scale), 13 * scale, 34 * scale)
             );
+            //puff
             _collisionBarriers.Add(
                 new Rectangle(mapX + (98 * scale), mapY + (100 * scale), 27 * scale, 25 * scale)
             );
+            // Medicinas y armas
             _collisionBarriers.Add(
                 new Rectangle(mapX + (96 * scale), mapY + (5 * scale), 29 * scale, 28 * scale)
             );
+            // Bateria
             _collisionBarriers.Add(
                 new Rectangle(mapX + (3 * scale), mapY + (4 * scale), 35 * scale, 15 * scale)
+            );
+        }
+
+        private void PopulateInteractableObjects()
+        {
+            int scale = MAP_SCALE_FACTOR;
+            int mapX = (int)_mapPosition.X;
+            int mapY = (int)_mapPosition.Y;
+
+            // Se pueden usar las mismas coordenadas de las hitboxs, o hacerlas un poco mas grandes
+            // Cama
+            Rectangle camaTrigger = new Rectangle(
+                mapX + (3 * scale),
+                mapY + (70 * scale),
+                30 * scale,
+                60 * scale
+            );
+            _interactableObjects.Add(
+                new InteractableObject { Name = "Cama", TriggerZone = camaTrigger }
+            );
+
+            // Escritorio Centro
+            Rectangle escritorioTrigger = new Rectangle(
+                mapX + (55 * scale),
+                mapY + (5 * scale),
+                22 * scale,
+                30 * scale
+            );
+            _interactableObjects.Add(
+                new InteractableObject { Name = "Escritorio", TriggerZone = escritorioTrigger }
+            );
+
+            // Bateria
+            Rectangle bateriaTrigger = new Rectangle(
+                mapX + (3 * scale),
+                mapY + (4 * scale),
+                35 * scale,
+                20 * scale
+            );
+            _interactableObjects.Add(
+                new InteractableObject { Name = "Bateria", TriggerZone = bateriaTrigger }
+            );
+            // Puff
+            Rectangle puffTrigger = new Rectangle(
+                mapX + (95 * scale),
+                mapY + (90 * scale),
+                40 * scale,
+                40 * scale
+            );
+            _interactableObjects.Add(
+                new InteractableObject { Name = "Puff", TriggerZone = puffTrigger }
+            );
+            // Medicinas y armas
+            Rectangle weaponsTrigger = new Rectangle(
+                mapX + (96 * scale),
+                mapY + (5 * scale),
+                32 * scale,
+                32 * scale
+            );
+            _interactableObjects.Add(
+                new InteractableObject { Name = "Armas_Medicinas", TriggerZone = weaponsTrigger }
             );
         }
 
@@ -238,6 +318,11 @@ namespace Sequence_Break
 
             _specterPosition = newPosition;
 
+            // Logica interaccion
+            if (currentKeyboardState.IsKeyDown(Keys.E) && !_previousKeyboardState.IsKeyDown(Keys.E))
+            {
+                CheckForInteraction();
+            }
             // Actualizar animacion
             if (_isMoving)
             {
@@ -270,6 +355,62 @@ namespace Sequence_Break
             _specterCurrent.Draw(SpriteBatch, _specterPosition);
 
             SpriteBatch.End();
+        }
+
+        private void CheckForInteraction()
+        {
+            // obtenemos la hitbox de Specter
+            Rectangle playerBox = GetPlayerBox(_specterPosition);
+
+            foreach (InteractableObject obj in _interactableObjects)
+            {
+                // Si la hitbox de Specter intersecta con la de un objeto, se hace la interaccion
+                if (playerBox.Intersects(obj.TriggerZone))
+                {
+                    PerformInteraction(obj.Name);
+
+                    // Rompemos el bucle para no interactuar con dos cosas a la vez
+                    break;
+                }
+            }
+        }
+
+        private void PerformInteraction(string objectName)
+        {
+            // Switch para saber que hacer con cada objeto.
+
+            // Usamos Console.WriteLine para que el mensaje
+            // aparezca en la "CONSOLA DE DEPURACIÓN" (DEBUG CONSOLE) de VSCode.
+            switch (objectName)
+            {
+                case "Cama":
+                    Console.WriteLine("No es momento de dormir. Hay un caso que resolver.");
+                    // TO DO: Guardar partida aca (aparte de en el menu) y curar sanidad
+                    break;
+
+                case "Escritorio":
+                    Console.WriteLine("Un monton de papeles... el rastro del Alquimista.");
+                    // TO DO: Cuando se haga click entrar al mapa ya hecho
+                    break;
+
+                case "Bateria":
+                    Console.WriteLine("Una bateria de coche. Mantiene las luces encendidas.");
+                    break;
+                case "Puff":
+                    Console.WriteLine("Comodo, pero esta cubierto de polvo.");
+                    break;
+
+                case "Armas_Medicinas":
+                    Console.WriteLine(
+                        "Mi equipo. Un revolver, municion y supresores de disonancia."
+                    );
+                    // TO DO: Abrir inventario aca
+                    break;
+
+                default:
+                    Console.WriteLine($"Interactuaste con un objeto sin lógica: {objectName}");
+                    break;
+            }
         }
     }
 }
