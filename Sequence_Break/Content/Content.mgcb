@@ -27,6 +27,21 @@
 /processorParam:TextureFormat=Compressed
 /build:fonts/IBMPlexMono.spritefont
 
+#begin Interface/Combat/combat-ui-spritesheet.xml
+/copy:Interface/Combat/combat-ui-spritesheet.xml
+
+#begin Interface/Combat/InterfaceSpriteSheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Interface/Combat/InterfaceSpriteSheet.png
+
 #begin maps/demo/textures/QuirurgicoTileset.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -50,6 +65,21 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:maps/demo/textures/RecepcionTileset.png
+
+#begin textures/enemies/demo/enemy-1-texture-atlas.xml
+/copy:textures/enemies/demo/enemy-1-texture-atlas.xml;textures/enemies/demo/enemy-1-atlas-definition.xml
+
+#begin textures/enemies/demo/enemy-1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/enemies/demo/enemy-1.png
 
 #begin textures/Specter_back.png
 /importer:TextureImporter

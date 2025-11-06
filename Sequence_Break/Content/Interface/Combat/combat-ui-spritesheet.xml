@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+  <Texture>Interface/Combat/InterfaceSpriteSheet</Texture>
+  <Regions>
+    <Region name="top-left" x="0" y="0" width="64" height="64" />
+    <Region name="top-center" x="69" y="1" width="64" height="64" />
+    <Region name="top-right" x="138" y="0" width="64" height="64" />
+    <Region name="middle-left" x="0" y="69" width="64" height="64" />
+    <Region name="middle-center" x="69" y="69" width="64" height="64" />
+    <Region name="middle-right" x="138" y="69" width="64" height="64" />
+    <Region name="down-left" x="0" y="139" width="64" height="64" />
+    <Region name="down-center" x="69" y="139" width="64" height="64" />
+    <Region name="down-right" x="138" y="139" width="64" height="64" />
+  </Regions>
+  <Animation name="top-left" delay="150">
+    <Frame region="top-left" />
+  </Animation>
+  <Animation name="top-center" delay="150">
+    <Frame region="top-center" />
+  </Animation>
+  <Animation name="top-right" delay="150">
+    <Frame region="top-right" />
+  </Animation>
+  <Animation name="middle-left" delay="150">
+    <Frame region="middle-left" />
+  </Animation>
+  <Animation name="middle-center" delay="150">
+    <Frame region="middle-center" />
+  </Animation>
+  <Animation name="middle-right" delay="150">
+    <Frame region="middle-right" />
+  </Animation>
+  <Animation name="down-left" delay="150">
+    <Frame region="down-left" />
+  </Animation>
+  <Animation name="down-center" delay="150">
+    <Frame region="down-center" />
+  </Animation>
+  <Animation name="down-right" delay="150">
+    <Frame region="down-right" />
+  </Animation>
+  
+</TextureAtlas>
