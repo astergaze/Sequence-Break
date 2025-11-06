@@ -14,7 +14,6 @@ namespace Sequence_Break
     public class CaseScreen : Screen
     {
         // Estructura de Interaccion
-        // necesaria para que TiledMapRenderer funcione
         public struct InteractableObject
         {
             public string Name;
@@ -46,11 +45,36 @@ namespace Sequence_Break
         private List<Rectangle> _collisionBarriers;
         private List<InteractableObject> _interactableObjects;
 
+        // --- INICIO DE MODIFICACIONES ---
+        
+        // Variables de estado para volver del combate
+        private string _currentMapName;
+        private string _initialMap;
+        private Vector2 _initialSpawnPoint;
+
+        // Textura para Debug (optimizada)
+        private Texture2D _pixelTexture;
+
+        // --- FIN DE MODIFICACIONES ---
+
         // Camara
         private Matrix _cameraTransform;
 
+        // Constructor por defecto (usado desde GameplayScreen)
         public CaseScreen(Game1 game)
-            : base(game) { }
+            : base(game) 
+        {
+            _initialMap = "Lobby";
+            _initialSpawnPoint = new Vector2(600, 750); // Tu spawn por defecto
+        }
+
+        // NUEVO Constructor (usado para VOLVER del combate)
+        public CaseScreen(Game1 game, string mapToLoad, Vector2 positionToSpawn)
+            : base(game)
+        {
+            _initialMap = mapToLoad;
+            _initialSpawnPoint = positionToSpawn;
+        }
 
         public override void LoadContent()
         {
@@ -90,16 +114,27 @@ namespace Sequence_Break
             _interactableObjects = new List<InteractableObject>();
 
             // 3. Cargar el Mapa Inicial
-            LoadMap("Lobby");
+            LoadMap(_initialMap); // Usa la variable inicial
 
             // 4. Posición de Spawn
-            _specterPosition = new Vector2(600, 750);
+            _specterPosition = _initialSpawnPoint; // Usa la variable inicial
 
             _previousKeyboardState = Keyboard.GetState();
+            
+            // --- INICIO DE MODIFICACIÓN ---
+            // 5. Crear la textura de píxel para Debug
+            _pixelTexture = new Texture2D(GraphicsDevice, 1, 1);
+            _pixelTexture.SetData(new[] { Color.White });
+            // --- FIN DE MODIFICACIÓN ---
         }
 
         private void LoadMap(string mapName)
         {
+            // --- INICIO DE MODIFICACIÓN ---
+            // Guarda el nombre del mapa actual
+            _currentMapName = mapName;
+            // --- FIN DE MODIFICACIÓN ---
+
             // 1. Ruta al .tmx (desde el .exe)
             string mapFileSystemPath = Path.Combine(
                 AppContext.BaseDirectory,
@@ -276,7 +311,20 @@ namespace Sequence_Break
             {
                 CheckForInteraction();
             }
-
+            
+            // --- INICIO DE MODIFICACIÓN ---
+            // (Tu tecla 'T' fue cambiada a 'C' como pediste antes)
+            if (currentKeyboardState.IsKeyDown(Keys.C) && !_previousKeyboardState.IsKeyDown(Keys.C))
+            {
+                Console.WriteLine("Iniciando combate de prueba...");
+                _game.IsMouseVisible = false; // Ocultamos el mouse
+                
+                // ¡Pasamos el mapa actual y la posición actual al combate!
+                _game.ChangeScreen(new CombatScreen(_game, _currentMapName, _specterPosition));
+                return; // Salimos del Update para no procesar más en esta pantalla
+            }
+            // --- FIN DE MODIFICACIÓN ---
+            
             // Actualización de Animación
             if (_isMoving)
             {
@@ -328,6 +376,8 @@ namespace Sequence_Break
             SpriteBatch.End();
         }
 
+        // --- INICIO DE MODIFICACIÓN ---
+        // Método de dibujo optimizado (usa _pixelTexture)
         private void DrawRectangle(
             SpriteBatch spriteBatch,
             Rectangle rect,
@@ -335,21 +385,20 @@ namespace Sequence_Break
             int thickness
         )
         {
-            Texture2D pixel = new Texture2D(GraphicsDevice, 1, 1);
-            pixel.SetData(new[] { Color.White });
-
-            spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y, rect.Width, thickness), color);
+            // Usamos la textura _pixelTexture (creada en LoadContent)
+            spriteBatch.Draw(_pixelTexture, new Rectangle(rect.X, rect.Y, rect.Width, thickness), color);
             spriteBatch.Draw(
-                pixel,
+                _pixelTexture,
                 new Rectangle(rect.X, rect.Y + rect.Height - thickness, rect.Width, thickness),
                 color
             );
-            spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
+            spriteBatch.Draw(_pixelTexture, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
             spriteBatch.Draw(
-                pixel,
+                _pixelTexture,
                 new Rectangle(rect.X + rect.Width - thickness, rect.Y, thickness, rect.Height),
                 color
             );
         }
+        // --- FIN DE MODIFICACIÓN ---
     }
 }
