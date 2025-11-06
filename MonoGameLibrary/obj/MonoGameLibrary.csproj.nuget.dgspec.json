@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj": {}
+    "C:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj": {}
   },
   "projects": {
-    "c:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj": {
+    "C:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj",
+        "projectUniqueName": "C:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj",
         "projectName": "MonoGameLibrary",
-        "projectPath": "c:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj",
+        "projectPath": "C:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj",
         "packagesPath": "C:\\Users\\frisk\\.nuget\\packages\\",
-        "outputPath": "c:\\code\\Sequence-Break\\MonoGameLibrary\\obj\\",
+        "outputPath": "C:\\code\\Sequence-Break\\MonoGameLibrary\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

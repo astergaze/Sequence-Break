@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>c:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_left.png</SourceFile>
-  <SourceTime>2025-10-30T11:04:20.9524256-03:00</SourceTime>
-  <DestFile>c:/code/Sequence-Break/Sequence_Break/Content/bin/DesktopGL/Content/textures/Specter_left.xnb</DestFile>
-  <DestTime>2025-10-30T19:36:27.8153425-03:00</DestTime>
+  <SourceFile>C:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_left.png</SourceFile>
+  <SourceTime>2025-11-05T00:53:20.4035511-03:00</SourceTime>
+  <DestFile>C:/code/Sequence-Break/Sequence_Break/Content/bin/DesktopGL/Content/textures/Specter_left.xnb</DestFile>
+  <DestTime>2025-11-05T22:50:48.9470894-03:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2025-10-20T11:25:32-03:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

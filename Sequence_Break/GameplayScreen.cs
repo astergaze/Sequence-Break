@@ -390,7 +390,8 @@ namespace Sequence_Break
 
                 case "Escritorio":
                     Console.WriteLine("Un monton de papeles... el rastro del Alquimista.");
-                    // TO DO: Cuando se haga click entrar al mapa ya hecho
+                    _game.ChangeScreen(new CaseScreen(_game));
+                    // TO DO: Poner la interfaz
                     break;
 
                 case "Bateria":

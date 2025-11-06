@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="64" tileheight="64" infinite="0" nextlayerid="10" nextobjectid="67">
+ <tileset firstgid="1" source="Demo_map.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="20" height="15">
+  <data encoding="csv">
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+</data>
+ </layer>
+ <layer id="2" name="Walls" width="20" height="15">
+  <data encoding="csv">
+9,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,9,
+9,12,12,10,10,12,12,10,10,10,10,10,10,10,12,12,10,10,10,9,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,
+9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,
+9,9,9,9,9,9,9,9,9,0,0,9,9,9,9,9,9,9,9,9
+</data>
+ </layer>
+ <layer id="3" name="Objects" width="20" height="15">
+  <data encoding="csv">
+0,0,13,0,13,13,0,13,0,0,0,0,0,13,0,13,34,34,34,0,
+0,34,30,31,32,30,31,32,34,34,34,34,34,30,31,32,33,33,33,0,
+0,34,38,29,38,38,29,38,33,33,33,33,33,38,0,38,33,33,33,0,
+0,34,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,34,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,34,30,31,31,31,31,31,31,31,31,31,31,31,31,31,32,0,0,0,
+0,34,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,0,0,0,
+0,34,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,34,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,34,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2684354590,0,
+0,34,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,27,3758096415,0,
+0,34,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2684354592,0,
+0,34,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,34,0,
+0,34,0,0,0,0,0,0,0,0,0,0,0,0,0,34,34,34,34,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="4" name="Objects 2" width="20" height="15">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,5,36,0,5,36,5,0,5,5,5,0,0,36,5,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,25,0,0,25,0,0,25,0,0,0,0,0,0,0,
+0,0,5,5,5,0,35,5,5,35,0,0,35,5,5,5,5,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,536870922,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1610612746,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,29,29,29,29,29,0,0,0,0,0,0,0,0,0,0,0,5,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,
+0,0,29,29,29,29,29,0,0,0,0,0,0,0,0,0,0,0,5,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,29,29,29,29,29,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,10,2147483658,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="7" name="Collisions">
+  <object id="6" x="0" y="0" width="64" height="960"/>
+  <object id="7" x="64" y="896" width="512" height="64"/>
+  <object id="9" x="704" y="896" width="512" height="64"/>
+  <object id="10" x="1216" y="512" width="64" height="448"/>
+  <object id="11" x="1216" y="0" width="64" height="384"/>
+  <object id="14" x="128" y="320" width="960" height="128"/>
+  <object id="15" x="128" y="64" width="64" height="128"/>
+  <object id="16" x="192" y="64" width="64" height="64"/>
+  <object id="17" x="256" y="64" width="64" height="128"/>
+  <object id="18" x="320" y="64" width="64" height="128"/>
+  <object id="19" x="384" y="64" width="64" height="64"/>
+  <object id="20" x="448" y="64" width="64" height="128"/>
+  <object id="21" x="512" y="64" width="320" height="128"/>
+  <object id="22" x="832" y="64" width="64" height="128"/>
+  <object id="23" x="896" y="64" width="64" height="64"/>
+  <object id="24" x="960" y="64" width="64" height="128"/>
+  <object id="25" x="1024" y="64" width="192" height="128"/>
+  <object id="26" x="1152" y="576" width="64" height="192"/>
+  <object id="27" x="1152" y="768" width="64" height="128"/>
+  <object id="28" x="960" y="832" width="192" height="64"/>
+  <object id="29" x="576" y="896" width="128" height="64"/>
+  <object id="30" x="1216" y="384" width="64" height="128"/>
+  <object id="31" x="128" y="576" width="320" height="64"/>
+  <object id="32" x="128" y="704" width="320" height="64"/>
+  <object id="33" x="128" y="832" width="320" height="64"/>
+  <object id="34" x="64" y="64" width="64" height="832"/>
+ </objectgroup>
+ <objectgroup id="8" name="Interactions">
+  <object id="36" x="1152" y="576" width="64" height="192">
+   <properties>
+    <property name="Name" value="DeskWithPapers"/>
+   </properties>
+  </object>
+  <object id="40" x="832" y="320" width="256" height="64">
+   <properties>
+    <property name="Name" value="DeskWithPapers"/>
+   </properties>
+  </object>
+  <object id="41" x="128" y="576" width="320" height="64">
+   <properties>
+    <property name="Name" value="WaitingChairs"/>
+   </properties>
+  </object>
+  <object id="42" x="128" y="704" width="320" height="64">
+   <properties>
+    <property name="Name" value="WaitingChairs"/>
+   </properties>
+  </object>
+  <object id="43" x="128" y="832" width="320" height="64">
+   <properties>
+    <property name="Name" value="WaitingChairs"/>
+   </properties>
+  </object>
+  <object id="44" x="896" y="64" width="64" height="64">
+   <properties>
+    <property name="Name" value="NotImportantComputer"/>
+   </properties>
+  </object>
+  <object id="46" x="384" y="64" width="64" height="64">
+   <properties>
+    <property name="Name" value="NotImportantComputer"/>
+   </properties>
+  </object>
+  <object id="47" x="192" y="64" width="64" height="64">
+   <properties>
+    <property name="Name" value="NotImportantComputer"/>
+   </properties>
+  </object>
+  <object id="48" x="384" y="320" width="64" height="64">
+   <properties>
+    <property name="Name" value="NotImportantComputer"/>
+   </properties>
+  </object>
+  <object id="49" x="576" y="320" width="64" height="64">
+   <properties>
+    <property name="Name" value="NotImportantComputer"/>
+   </properties>
+  </object>
+  <object id="50" x="768" y="320" width="64" height="64">
+   <properties>
+    <property name="Name" value="NotImportantComputer"/>
+   </properties>
+  </object>
+  <object id="51" x="128" y="320" width="192" height="64">
+   <properties>
+    <property name="Name" value="DeskWithPapers"/>
+   </properties>
+  </object>
+  <object id="52" x="512" y="128" width="320" height="64">
+   <properties>
+    <property name="Name" value="FileCabinet"/>
+   </properties>
+  </object>
+  <object id="53" x="1024" y="128" width="192" height="64">
+   <properties>
+    <property name="Name" value="FileCabinet"/>
+   </properties>
+  </object>
+  <object id="54" x="960" y="832" width="192" height="64">
+   <properties>
+    <property name="Name" value="FileCabinet"/>
+   </properties>
+  </object>
+  <object id="55" x="1152" y="768" width="64" height="64">
+   <properties>
+    <property name="Name" value="FileCabinet"/>
+   </properties>
+  </object>
+  <object id="56" x="64" y="192" width="64" height="704">
+   <properties>
+    <property name="Name" value="FileCabinet"/>
+   </properties>
+  </object>
+  <object id="57" x="128" y="384" width="960" height="64">
+   <properties>
+    <property name="Name" value="DeskDrawer"/>
+   </properties>
+  </object>
+  <object id="58" x="128" y="128" width="64" height="64">
+   <properties>
+    <property name="Name" value="DeskDrawer"/>
+   </properties>
+  </object>
+  <object id="59" x="256" y="128" width="64" height="64">
+   <properties>
+    <property name="Name" value="DeskDrawer"/>
+   </properties>
+  </object>
+  <object id="60" x="320" y="128" width="64" height="64">
+   <properties>
+    <property name="Name" value="DeskDrawer"/>
+   </properties>
+  </object>
+  <object id="61" x="448" y="128" width="64" height="64">
+   <properties>
+    <property name="Name" value="DeskDrawer"/>
+   </properties>
+  </object>
+  <object id="62" x="832" y="128" width="64" height="64">
+   <properties>
+    <property name="Name" value="DeskDrawer"/>
+   </properties>
+  </object>
+  <object id="63" x="960" y="128" width="64" height="64">
+   <properties>
+    <property name="Name" value="DeskDrawer"/>
+   </properties>
+  </object>
+  <object id="64" x="1216" y="384" width="64" height="128">
+   <properties>
+    <property name="Name" value="DoorMainHall"/>
+    <property name="TargetMap" value="MainHall"/>
+    <property name="TargetSpawn" value="SpawnFromLobby"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="9" name="Spawns">
+  <object id="65" x="640" y="768">
+   <properties>
+    <property name="Name" value="PlayerSpawn"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="66" x="1152" y="448">
+   <properties>
+    <property name="Name" value="SpawnFromMainHall"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
+</map>

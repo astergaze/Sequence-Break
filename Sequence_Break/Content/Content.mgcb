@@ -27,6 +27,30 @@
 /processorParam:TextureFormat=Compressed
 /build:fonts/IBMPlexMono.spritefont
 
+#begin maps/demo/textures/QuirurgicoTileset.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:maps/demo/textures/QuirurgicoTileset.png
+
+#begin maps/demo/textures/RecepcionTileset.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:maps/demo/textures/RecepcionTileset.png
+
 #begin textures/Specter_back.png
 /importer:TextureImporter
 /processor:TextureProcessor
