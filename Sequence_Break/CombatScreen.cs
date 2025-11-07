@@ -10,13 +10,13 @@ namespace Sequence_Break
 {
     public class CombatScreen : Screen
     {
-        // --- Clases de ejemplo para los combatientes ---
+        // clases de combatientes
         public class Combatant
         {
             public string Name { get; set; }
             public int CurrentHP { get; set; }
             public int MaxHP { get; set; }
-            public Texture2D Sprite { get; set; } // Dejado por compatibilidad
+            public Texture2D Sprite { get; set; } // por si acaso
             public Vector2 Position { get; set; }
         }
 
@@ -28,29 +28,31 @@ namespace Sequence_Break
             public int MaxBalas { get; set; }
         }
 
-        // --- INICIO DE CORRECCIÓN ---
-        // La clase Enemy ahora guarda un AnimatedSprite (tipo correcto)
         public class Enemy : Combatant
         {
             public AnimatedSprite AnimatedSprite { get; set; }
         }
 
-        // --- FIN DE CORRECCIÓN ---
-
-        // --- Variables de la pantalla de combate ---
+        // variables de la UI de batalla
 
         // Fuentes y Texturas
         private SpriteFont _uiFont;
-        private Texture2D _pixel; // Textura 1x1 para dibujar barras
+        private Texture2D _pixel;
 
-        private TextureAtlas _enemyAtlas; // Atlas para el enemigo
+        // Sprites
+        private TextureAtlas _enemyAtlas;
         private const float ENEMY_SCALE = 4.0f; // Escalado del sprite del enemigo
+
+        private TextureAtlas _specterAtlas;
+        private AnimatedSprite _specterSprite;
+        private Vector2 _specterPosition;
+        private const float PLAYER_SCALE = 3.0f;
 
         // Combatientes
         private Player _player;
         private Enemy _enemy;
 
-        // Máquina de estados del combate
+        // Estados del combate
         private enum CombatState
         {
             Start,
@@ -64,11 +66,11 @@ namespace Sequence_Break
 
         private CombatState _currentState;
 
-        // Lógica del Menú de Combate
+        // logica menu de combate
         private string[] _menuOptions = { "ATAQUE", "GLITCH", "DEFENSA", "OBJETOS", "ESCAPAR" };
         private int _selectedOption = 0;
 
-        // Lógica del Atlas de la UI
+        // logica atlas UI
         private TextureAtlas _uiAtlas;
         private Sprite _uiTopLeft,
             _uiTopCenter,
@@ -85,7 +87,7 @@ namespace Sequence_Break
         private Rectangle _uiBoxLeft;
         private Vector2 _menuStartPosition;
         private Color _menuNormalColor = Color.White;
-        private Color _menuSelectedColor = new Color(112, 56, 168); // Morado brillante
+        private Color _menuSelectedColor = new Color(112, 56, 168);
         private Color _hpColor = new Color(111, 19, 175);
         private Color _corduraColor = new Color(124, 176, 255);
         private Color _barBackgroundColor = new Color(40, 40, 40);
@@ -96,7 +98,6 @@ namespace Sequence_Break
         private string _returnMapName;
         private Vector2 _returnPosition;
 
-        // Constructor MODIFICADO
         public CombatScreen(Game1 game, string returnMap, Vector2 returnPos)
             : base(game)
         {
@@ -109,13 +110,12 @@ namespace Sequence_Break
             // Cargar fuentes
             _uiFont = Content.Load<SpriteFont>("fonts/IBMPlexMono");
 
-            // --- Cargar Atlas del Enemigo ---
-            // ¡¡ASEGÚRATE DE QUE ESTA RUTA AL XML ES CORRECTA!!
+            // Cargar Atlas del Enemigo
             try
             {
                 _enemyAtlas = TextureAtlas.FromFile(
                     Content,
-                    "textures/enemies/demo/enemy-1-texture-atlas.xml" // <- CAMBIA ESTO por la ruta a tu XML
+                    "textures/enemies/demo/enemy-1-texture-atlas.xml"
                 );
             }
             catch (Exception ex)
@@ -123,17 +123,25 @@ namespace Sequence_Break
                 Console.WriteLine($"Error cargando el atlas del enemigo: {ex.Message}");
                 throw;
             }
-
-            // --- INICIO DE CORRECCIÓN ---
-            // Crear el sprite animado (tipo correcto)
             AnimatedSprite enemyAnimatedSprite = _enemyAtlas.CreateAnimatedSprite("enemy-attack");
-
-            // Asignar la escala al objeto Sprite (como en GameplayScreen)
             enemyAnimatedSprite.Scale = new Vector2(ENEMY_SCALE, ENEMY_SCALE);
-            // Se eliminó la línea .Play()
-            // --- FIN DE CORRECCIÓN ---
 
-            // Crear el píxel blanco para la UI
+            // Cargar Atlas de Specter
+            try
+            {
+                _specterAtlas = TextureAtlas.FromFile(
+                    Content,
+                    "textures/Specter-right-atlas-definition.xml"
+                );
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error cargando el atlas de Specter: {ex.Message}");
+                throw;
+            }
+            _specterSprite = _specterAtlas.CreateAnimatedSprite("luka-walk-right");
+            _specterSprite.Scale = new Vector2(PLAYER_SCALE, PLAYER_SCALE);
+
             _pixel = new Texture2D(GraphicsDevice, 1, 1);
             _pixel.SetData(new[] { Color.White });
 
@@ -159,21 +167,15 @@ namespace Sequence_Break
             int screenHeight = GraphicsDevice.Viewport.Height;
             int uiHeight = 250;
 
-            _uiBoxMain = new Rectangle(
-                0, // De borde a borde
-                screenHeight - uiHeight, // Pegado abajo
-                screenWidth, // Ancho completo
-                uiHeight
-            );
+            _uiBoxMain = new Rectangle(0, screenHeight - uiHeight, screenWidth, uiHeight);
 
             _uiBoxLeft = new Rectangle(
                 _uiBoxMain.X,
                 _uiBoxMain.Y,
-                (int)(_uiBoxMain.Width * 0.25f), // El 25% del ancho total
+                (int)(_uiBoxMain.Width * 0.25f),
                 _uiBoxMain.Height
             );
 
-            // Ajustamos el padding basado en el borde de la caja
             _menuStartPosition = new Vector2(_uiBoxMain.X + 20, _uiBoxLeft.Y + 20);
 
             // Inicializar combatientes
@@ -188,18 +190,28 @@ namespace Sequence_Break
                 MaxBalas = 12,
             };
 
-            // --- Inicializar Enemigo ---
+            // Posiciones de Combatientes
+
+            // Posición Y compartida (para que estén alineados)
+            float combatantY = screenHeight / 2 - 150;
+
+            // Posicionar a Specter (Izquierda)
+            _specterPosition = new Vector2(
+                200, // 200px desde la izquierda
+                combatantY
+            );
+
+            // Posicionar al Enemigo (Derecha)
+            float enemyScaledWidth = enemyAnimatedSprite.Region.SourceRectangle.Width * ENEMY_SCALE;
             _enemy = new Enemy
             {
                 Name = "Disonancia",
                 CurrentHP = 80,
                 MaxHP = 80,
-                AnimatedSprite = enemyAnimatedSprite, // Asignar el sprite animado
+                AnimatedSprite = enemyAnimatedSprite,
                 Position = new Vector2(
-                    // Centrar el sprite escalado (usamos el ancho del *frame*)
-                    screenWidth / 2
-                        - (enemyAnimatedSprite.Region.SourceRectangle.Width * ENEMY_SCALE / 2),
-                    screenHeight / 2 - 150
+                    screenWidth - enemyScaledWidth - 200, // 200px desde la derecha
+                    combatantY
                 ),
             };
 
@@ -212,10 +224,11 @@ namespace Sequence_Break
         {
             KeyboardState currentKeyboardState = Keyboard.GetState();
 
-            // Actualizar animación del enemigo (esto es correcto, como en tu GameplayScreen)
+            // Actualizar ambas animaciones
             _enemy.AnimatedSprite.Update(gameTime);
+            _specterSprite.Update(gameTime);
 
-            // Máquina de estados
+            // Estados
             switch (_currentState)
             {
                 case CombatState.Start:
@@ -240,8 +253,6 @@ namespace Sequence_Break
 
                 case CombatState.EnemyTurn:
                     Console.WriteLine("Turno del enemigo. ¡Atacando!");
-                    // Aquí podrías cambiar la animación a "attack" si tuvieras una de "idle"
-                    // Por ahora, la animación "enemy-attack" se reproduce en bucle
                     _currentState = CombatState.EnemyAction;
                     break;
 
@@ -255,7 +266,6 @@ namespace Sequence_Break
                     }
                     else
                     {
-                        // Al terminar la acción, podrías volver a "idle"
                         _currentState = CombatState.PlayerSelectAction;
                     }
                     break;
@@ -266,7 +276,6 @@ namespace Sequence_Break
                         && !_previousKeyboardState.IsKeyDown(Keys.Enter)
                     )
                     {
-                        // ¡Volvemos al mapa y posición guardados!
                         _game.ChangeScreen(new CaseScreen(_game, _returnMapName, _returnPosition));
                     }
                     break;
@@ -287,7 +296,7 @@ namespace Sequence_Break
 
         private void HandlePlayerInput(KeyboardState kbs)
         {
-            // Navegación del menú
+            // menu navigation
             if (
                 kbs.IsKeyDown(Keys.W) && !_previousKeyboardState.IsKeyDown(Keys.W)
                 || kbs.IsKeyDown(Keys.Up) && !_previousKeyboardState.IsKeyDown(Keys.Up)
@@ -308,7 +317,7 @@ namespace Sequence_Break
                     _selectedOption = 0;
             }
 
-            // Seleccionar opción
+            // Seleccionar opcion
             if (
                 kbs.IsKeyDown(Keys.Enter) && !_previousKeyboardState.IsKeyDown(Keys.Enter)
                 || kbs.IsKeyDown(Keys.E) && !_previousKeyboardState.IsKeyDown(Keys.E)
@@ -342,7 +351,6 @@ namespace Sequence_Break
                     break;
                 case "ESCAPAR":
                     Console.WriteLine("Intentando escapar...");
-                    // ¡Volvemos al mapa y posición guardados!
                     _game.ChangeScreen(new CaseScreen(_game, _returnMapName, _returnPosition));
                     break;
             }
@@ -350,21 +358,23 @@ namespace Sequence_Break
 
         public override void Draw(GameTime gameTime)
         {
-            // El fondo se limpia en Game1.cs
-
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
             const float uiScale = 0.8f;
 
-            // 1. Dibujar al enemigo (animado y escalado)
-            // Esta llamada usa la escala guardada en el objeto _enemy.AnimatedSprite
+            // dibujar peleadores
+
+            // Specter (Izquierda)
+            _specterSprite.Draw(SpriteBatch, _specterPosition);
+
+            // Enemigo (Derecha)
             _enemy.AnimatedSprite.Draw(SpriteBatch, _enemy.Position);
 
-            // 2. Dibujar las cajas de la UI
+            // Dibujar las cajas de la UI
             DrawNineSlicePanel(SpriteBatch, _uiBoxMain);
             DrawNineSlicePanel(SpriteBatch, _uiBoxLeft);
 
-            // 3. Dibujar el menú (Caja Izquierda)
+            // Dibujar el menú (Caja Izquierda)
             for (int i = 0; i < _menuOptions.Length; i++)
             {
                 Color color = (i == _selectedOption) ? _menuSelectedColor : _menuNormalColor;
@@ -389,13 +399,12 @@ namespace Sequence_Break
                 );
             }
 
-            // 4. Dibujar Stats (Caja Derecha)
+            // Dibujar Stats (Caja Derecha)
             float padding = 30f;
             float statsAreaX = _uiBoxLeft.Right + padding;
             float rightAlignX = _uiBoxMain.Right - padding;
             float currentY = _uiBoxLeft.Top + 20;
 
-            // --- Primera Fila: Nombre (Izquierda) y Balas (Derecha) ---
             Vector2 namePosition = new Vector2(statsAreaX, currentY);
             SpriteBatch.DrawString(
                 _uiFont,
@@ -425,7 +434,6 @@ namespace Sequence_Break
                 0f
             );
 
-            // --- Siguientes Filas: Barras de Stats ---
             currentY += 45;
 
             float hpLabelWidth = _uiFont.MeasureString("HP").X * uiScale;
@@ -442,7 +450,6 @@ namespace Sequence_Break
 
             Vector2 barRowPosition = new Vector2(statsAreaX, currentY);
 
-            // HP
             DrawStatBar(
                 "HP",
                 _player.CurrentHP,
@@ -458,7 +465,6 @@ namespace Sequence_Break
             currentY += 35;
             barRowPosition.Y = currentY;
 
-            // Cordura
             DrawStatBar(
                 "Cordura",
                 _player.CurrentCordura,
@@ -471,20 +477,20 @@ namespace Sequence_Break
                 valueTextStartX
             );
 
-            // 5. Dibujar mensajes de estado (Victoria/Derrota)
+            // Dibujar mensajes de estado (Victoria/Derrota)
             if (_currentState == CombatState.Won)
             {
-                DrawCenterText("COMBATE GANADO\n[Presiona ENTER]", 1.0f); // Texto grande
+                DrawCenterText("COMBATE GANADO\n[Presiona ENTER]", 1.0f);
             }
             else if (_currentState == CombatState.Lost)
             {
-                DrawCenterText("HAS CAÍDO...\n[Presiona ENTER]", 1.0f); // Texto grande
+                DrawCenterText("HAS CAÍDO...\n[Presiona ENTER]", 1.0f);
             }
 
             SpriteBatch.End();
         }
 
-        // --- Métodos de Ayuda para Dibujar ---
+        // Métodos de Ayuda para Dibujar
 
         private void DrawStatBar(
             string label,
@@ -498,7 +504,6 @@ namespace Sequence_Break
             float valueTextStartX
         )
         {
-            // 1. Dibujar Etiqueta
             SpriteBatch.DrawString(
                 _uiFont,
                 label,
@@ -516,7 +521,6 @@ namespace Sequence_Break
 
             float barY = position.Y + (labelSize.Y / 2) - (barHeight / 2);
 
-            // 2. Dibujar Texto (Valor)
             string statText = $"{current}/{max}";
             Vector2 textPos = new Vector2(valueTextStartX, position.Y);
 
@@ -532,7 +536,6 @@ namespace Sequence_Break
                 0f
             );
 
-            // 3. Dibujar la Barra
             if (barWidth < 0)
                 barWidth = 0;
 
@@ -593,7 +596,6 @@ namespace Sequence_Break
             int cornerSize = (int)(sourceSpriteSize * scale);
             Texture2D texture = _uiTopLeft.Region.Texture;
 
-            // 1. Dibujar Esquinas
             spriteBatch.Draw(
                 texture,
                 new Rectangle(destination.X, destination.Y, cornerSize, cornerSize),
@@ -633,8 +635,6 @@ namespace Sequence_Break
                 _uiBottomRight.Region.SourceRectangle,
                 Color.White
             );
-
-            // 2. Dibujar Bordes (estirados)
             spriteBatch.Draw(
                 texture,
                 new Rectangle(
@@ -679,8 +679,6 @@ namespace Sequence_Break
                 _uiMiddleRight.Region.SourceRectangle,
                 Color.White
             );
-
-            // 3. Dibujar Centro (estirado en ambas direcciones)
             spriteBatch.Draw(
                 texture,
                 new Rectangle(
