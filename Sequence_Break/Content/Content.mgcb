@@ -27,8 +27,8 @@
 /processorParam:TextureFormat=Compressed
 /build:fonts/IBMPlexMono.spritefont
 
-#begin Interface/Combat/combat-ui-spritesheet.xml
-/copy:Interface/Combat/combat-ui-spritesheet.xml
+#begin Interface/Combat/interface-combat-atlas-definition.xml
+/copy:Interface/Combat/interface-combat-atlas-definition.xml
 
 #begin Interface/Combat/InterfaceSpriteSheet.png
 /importer:TextureImporter

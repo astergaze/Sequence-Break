@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas>
-  <Texture>demo/enemy-1</Texture>
+  <Texture>textures/enemies/demo/enemy-1</Texture>
   <Regions>
     <Region name="enemy-1" x="0" y="1" width="24" height="39" />
     <Region name="enemy-2" x="24" y="2" width="24" height="38" />

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>c:/code/Sequence-Break/Sequence_Break/Content/fonts/IBMPlexMono.spritefont</SourceFile>
-  <SourceTime>2025-11-05T00:53:20.3904428-03:00</SourceTime>
+  <SourceTime>2025-11-06T19:31:55.183361-03:00</SourceTime>
   <DestFile>c:/code/Sequence-Break/Sequence_Break/Content/bin/DesktopGL/fonts/IBMPlexMono.xnb</DestFile>
-  <DestTime>2025-11-05T22:45:10.1397616-03:00</DestTime>
+  <DestTime>2025-11-06T21:11:01.2276076-03:00</DestTime>
   <Importer>FontDescriptionImporter</Importer>
   <ImporterTime>2025-10-20T11:25:32-03:00</ImporterTime>
   <Processor>FontDescriptionProcessor</Processor>

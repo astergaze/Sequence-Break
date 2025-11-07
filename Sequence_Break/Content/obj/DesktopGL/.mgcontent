@@ -6,8 +6,10 @@
   <SourceFiles>
     <File>c:/code/Sequence-Break/Sequence_Break/Content/fonts/BebasNeue.spritefont</File>
     <File>c:/code/Sequence-Break/Sequence_Break/Content/fonts/IBMPlexMono.spritefont</File>
+    <File>c:/code/Sequence-Break/Sequence_Break/Content/Interface/Combat/InterfaceSpriteSheet.png</File>
     <File>c:/code/Sequence-Break/Sequence_Break/Content/maps/demo/textures/QuirurgicoTileset.png</File>
     <File>c:/code/Sequence-Break/Sequence_Break/Content/maps/demo/textures/RecepcionTileset.png</File>
+    <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/enemies/demo/enemy-1.png</File>
     <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_back.png</File>
     <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_front.png</File>
     <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_left.png</File>
@@ -15,6 +17,8 @@
     <File>c:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_room.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

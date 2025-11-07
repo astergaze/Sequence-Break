@@ -40,8 +40,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-  <Content Include="Content\Interface\Combat\interface-combat-atlas-definition.xml">
-    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-  </Content>
-</ItemGroup>
+    <Content Include="Content\Interface\Combat\interface-combat-atlas-definition.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\textures\enemies\demo\enemy-1-texture-atlas.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
