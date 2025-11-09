@@ -1,4 +1,3 @@
-// CaseScreen.cs
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,9 +44,7 @@ namespace Sequence_Break
         private List<Rectangle> _collisionBarriers;
         private List<InteractableObject> _interactableObjects;
 
-        // --- INICIO DE MODIFICACIONES ---
-        
-        // Variables de estado para volver del combate
+        // Variables de estado
         private string _currentMapName;
         private string _initialMap;
         private Vector2 _initialSpawnPoint;
@@ -55,20 +52,24 @@ namespace Sequence_Break
         // Textura para Debug (optimizada)
         private Texture2D _pixelTexture;
 
-        // --- FIN DE MODIFICACIONES ---
+        // UI
+        private InteractionPanel _interactionPanel;
+        private SpriteFont _uiFont;
+        private TextureAtlas _uiAtlas;
+        private string _currentInteractionName = string.Empty; // Para el evento de opciones
 
         // Camara
         private Matrix _cameraTransform;
 
-        // Constructor por defecto (usado desde GameplayScreen)
+        // Constructor por defecto
         public CaseScreen(Game1 game)
-            : base(game) 
+            : base(game)
         {
             _initialMap = "Lobby";
-            _initialSpawnPoint = new Vector2(600, 750); // Tu spawn por defecto
+            _initialSpawnPoint = new Vector2(600, 750); // spawn por defecto
         }
 
-        // NUEVO Constructor (usado para VOLVER del combate)
+        // Constructor (usado para VOLVER del combate)
         public CaseScreen(Game1 game, string mapToLoad, Vector2 positionToSpawn)
             : base(game)
         {
@@ -78,7 +79,7 @@ namespace Sequence_Break
 
         public override void LoadContent()
         {
-            // 1. cargar sprites de specter
+            // cargar sprites de specter
             TextureAtlas atlasFront = TextureAtlas.FromFile(
                 Content,
                 "textures/Specter-front-atlas-definition.xml"
@@ -109,45 +110,56 @@ namespace Sequence_Break
 
             _specterCurrent = _specterWalkFront;
 
-            // 2. Inicializar Listas
+            // Inicializar Listas
             _collisionBarriers = new List<Rectangle>();
             _interactableObjects = new List<InteractableObject>();
 
-            // 3. Cargar el Mapa Inicial
+            // Cargar el Mapa Inicial
             LoadMap(_initialMap); // Usa la variable inicial
 
-            // 4. Posición de Spawn
+            // Posición de Spawn
             _specterPosition = _initialSpawnPoint; // Usa la variable inicial
 
-            _previousKeyboardState = Keyboard.GetState();
-            
-            // --- INICIO DE MODIFICACIÓN ---
-            // 5. Crear la textura de píxel para Debug
+            // Crear la textura de píxel para Debug
             _pixelTexture = new Texture2D(GraphicsDevice, 1, 1);
             _pixelTexture.SetData(new[] { Color.White });
-            // --- FIN DE MODIFICACIÓN ---
+
+            // Cargar Assets de UI
+            try
+            {
+                _uiFont = Content.Load<SpriteFont>("fonts/IBMPlexMono");
+                _uiAtlas = TextureAtlas.FromFile(
+                    Content,
+                    "Interface/Combat/interface-combat-atlas-definition.xml"
+                );
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(
+                    $"Error cargando assets de UI para InteractionPanel: {ex.Message}"
+                );
+                throw;
+            }
+
+            // Inicializar Panel de Interacción
+            _interactionPanel = new InteractionPanel(_uiFont, _uiAtlas, GraphicsDevice);
+            _interactionPanel.OnOptionSelected += HandleInteractionChoice; // Suscribirse al evento
+
+            _previousKeyboardState = Keyboard.GetState();
         }
 
         private void LoadMap(string mapName)
         {
-            // --- INICIO DE MODIFICACIÓN ---
-            // Guarda el nombre del mapa actual
             _currentMapName = mapName;
-            // --- FIN DE MODIFICACIÓN ---
 
-            // 1. Ruta al .tmx (desde el .exe)
             string mapFileSystemPath = Path.Combine(
                 AppContext.BaseDirectory,
                 $"Content/maps/demo/{mapName}.tmx"
             );
-
-            // 2. Ruta a las texturas (para Content.Load)
             string tilesetContentFolder = "maps/demo/textures";
 
-            // 3. Creamos el renderizador.
             _mapRenderer = new TiledMapRenderer(Content, mapFileSystemPath, tilesetContentFolder);
 
-            // 4. Leemos colisiones e interacciones
             _collisionBarriers = _mapRenderer.GetCollisionRectangles();
             _interactableObjects = _mapRenderer.GetInteractableObjects();
         }
@@ -191,53 +203,89 @@ namespace Sequence_Break
         // Lógica de Interacción del Nivel
         private void PerformInteraction(InteractableObject interactable)
         {
-            // Tepearse
-            // revisamos si es una puerta (si tiene TargetMap)
+            // Guardamos el nombre para el event handler
+            _currentInteractionName = interactable.Name;
+
+            // Tepearse (Puertas)
             if (interactable.TargetMap != null && interactable.TargetSpawn != null)
             {
                 Console.WriteLine(
                     $"Interactuaste con: {interactable.Name}. Cargando mapa: {interactable.TargetMap}..."
                 );
 
-                // 1. Cargamos el mapa definido en Tiled
                 LoadMap(interactable.TargetMap);
-
-                // 2. Buscamos el punto de spawn definido en Tiled
                 _specterPosition = _mapRenderer.GetSpawnPoint(interactable.TargetSpawn);
 
-                // 3. Centramos la cámara en el nuevo spawn
                 _cameraTransform = Matrix.CreateTranslation(
                     -_specterPosition.X + (GraphicsDevice.Viewport.Width / 2),
                     -_specterPosition.Y + (GraphicsDevice.Viewport.Height / 2),
                     0
                 );
-
-                // Salimos de la función, ya que la interacción principal fue el teletransporte.
                 return;
             }
 
             // Objetos comunes
-            // Si no era una puerta, entonces es un objeto normal.
             switch (interactable.Name)
             {
-                // Un trigger de lore
-                case "lore":
-                    Console.WriteLine("");
+                case "lore_1":
+                    _interactionPanel.Show(
+                        "Las paredes están cubiertas de anotaciones crípticas. 'La disonancia es la clave', 'No confíes en el reflejo'. El Alquimista estuvo aquí, y no estaba solo.",
+                        null, // Sin opciones
+                        "Pista"
+                    );
                     break;
 
-                // Un trigger para volver al hub, dudo usarlo
-                case "":
-                    Console.WriteLine("");
+                case "npc_1":
+                    var options = new List<string> { "Preguntar por el Alquimista", "Ignorar" };
+                    _interactionPanel.Show(
+                        "El hombre te mira con ojos vacíos. '¿Tú también lo buscas? Ten cuidado, lo que yace aquí... no le gusta que lo despierten.'",
+                        options,
+                        "Hombre Aterrado"
+                    );
+                    break;
+
+                case "hub_return":
                     _game.IsMouseVisible = true;
                     _game.ChangeScreen(new GameplayScreen(_game));
                     break;
 
                 default:
-                    Console.WriteLine(
-                        $"Interactuaste con: {interactable.Name} (sin accion definida)"
+                    _interactionPanel.Show(
+                        $"Interactuaste con: {interactable.Name} (sin accion definida)",
+                        null,
+                        null
                     );
                     break;
             }
+        }
+
+        /// Maneja la respuesta del jugador desde el InteractionPanel.
+        private void HandleInteractionChoice(int optionIndex)
+        {
+            // Usamos la variable _currentInteractionName para saber a qué respondía el jugador
+            switch (_currentInteractionName)
+            {
+                case "npc_1":
+                    if (optionIndex == 0) // "Preguntar por el Alquimista"
+                    {
+                        // Podríamos mostrar otro diálogo encadenado
+                        _interactionPanel.Show(
+                            "'Se fue por ese pasillo... dijo algo sobre... 'romper la secuencia'. No sé qué signifique, y no quiero saberlo.'",
+                            null,
+                            "Hombre Aterrado"
+                        );
+                    }
+                    else // "Ignorar"
+                    {
+                        // No hacer nada, el panel ya se cerró
+                    }
+                    break;
+
+                // Añadir más casos aca para otras interacciones con opciones
+            }
+
+            // Limpiamos la interacción actual
+            _currentInteractionName = string.Empty;
         }
 
         public override void Update(GameTime gameTime)
@@ -256,127 +304,146 @@ namespace Sequence_Break
                 Core.Graphics.ApplyChanges();
             }
 
-            // Movimiento y Colisión
-            _isMoving = false;
-            Vector2 movement = Vector2.Zero;
-
-            if (currentKeyboardState.IsKeyDown(Keys.W) || currentKeyboardState.IsKeyDown(Keys.Up))
-                movement.Y = -1;
-            if (currentKeyboardState.IsKeyDown(Keys.S) || currentKeyboardState.IsKeyDown(Keys.Down))
-                movement.Y = 1;
-            if (currentKeyboardState.IsKeyDown(Keys.A) || currentKeyboardState.IsKeyDown(Keys.Left))
-                movement.X = -1;
-            if (
-                currentKeyboardState.IsKeyDown(Keys.D) || currentKeyboardState.IsKeyDown(Keys.Right)
-            )
-                movement.X = 1;
-
-            if (movement != Vector2.Zero)
+            // Si el panel de interacción está activo, él toma el control.
+            // Toda la lógica de movimiento y juego se salta.
+            if (_interactionPanel.IsActive)
             {
-                _isMoving = true;
-                if (movement.X < 0)
-                    _specterCurrent = _specterWalkLeft;
-                else if (movement.X > 0)
-                    _specterCurrent = _specterWalkRight;
-                else if (movement.Y < 0)
-                    _specterCurrent = _specterWalkBack;
-                else if (movement.Y > 0)
-                    _specterCurrent = _specterWalkFront;
-            }
-
-            if (movement != Vector2.Zero)
-                movement.Normalize();
-
-            movement *= MOVEMENT_SPEED;
-
-            Vector2 newPosition = _specterPosition;
-            newPosition.X += movement.X;
-            Rectangle playerBoxX = GetPlayerBox(newPosition);
-            if (HasCollision(playerBoxX))
-            {
-                newPosition.X = _specterPosition.X;
-            }
-
-            newPosition.Y += movement.Y;
-            Rectangle playerBoxY = GetPlayerBox(newPosition);
-            if (HasCollision(playerBoxY))
-            {
-                newPosition.Y = _specterPosition.Y;
-            }
-
-            _specterPosition = newPosition;
-
-            // Interacción
-            if (currentKeyboardState.IsKeyDown(Keys.E) && !_previousKeyboardState.IsKeyDown(Keys.E))
-            {
-                CheckForInteraction();
-            }
-            
-            // --- INICIO DE MODIFICACIÓN ---
-            // (Tu tecla 'T' fue cambiada a 'C' como pediste antes)
-            if (currentKeyboardState.IsKeyDown(Keys.C) && !_previousKeyboardState.IsKeyDown(Keys.C))
-            {
-                Console.WriteLine("Iniciando combate de prueba...");
-                _game.IsMouseVisible = false; // Ocultamos el mouse
-                
-                // ¡Pasamos el mapa actual y la posición actual al combate!
-                _game.ChangeScreen(new CombatScreen(_game, _currentMapName, _specterPosition));
-                return; // Salimos del Update para no procesar más en esta pantalla
-            }
-            // --- FIN DE MODIFICACIÓN ---
-            
-            // Actualización de Animación
-            if (_isMoving)
-            {
-                _specterCurrent.Update(gameTime);
+                _interactionPanel.Update(gameTime);
             }
             else
             {
-                _specterCurrent.CurrentFrame = 0;
-            }
+                // El panel NO está activo, el jugador puede moverse e interactuar.
 
-            // Actualización de Cámara
-            // Centramos la cámara en el jugador
-            _cameraTransform = Matrix.CreateTranslation(
-                -_specterPosition.X + (GraphicsDevice.Viewport.Width / 2),
-                -_specterPosition.Y + (GraphicsDevice.Viewport.Height / 2),
-                0
-            );
+                // Movimiento y Colisión
+                _isMoving = false;
+                Vector2 movement = Vector2.Zero;
+
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.W)
+                    || currentKeyboardState.IsKeyDown(Keys.Up)
+                )
+                    movement.Y = -1;
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.S)
+                    || currentKeyboardState.IsKeyDown(Keys.Down)
+                )
+                    movement.Y = 1;
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.A)
+                    || currentKeyboardState.IsKeyDown(Keys.Left)
+                )
+                    movement.X = -1;
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.D)
+                    || currentKeyboardState.IsKeyDown(Keys.Right)
+                )
+                    movement.X = 1;
+
+                if (movement != Vector2.Zero)
+                {
+                    _isMoving = true;
+                    if (movement.X < 0)
+                        _specterCurrent = _specterWalkLeft;
+                    else if (movement.X > 0)
+                        _specterCurrent = _specterWalkRight;
+                    else if (movement.Y < 0)
+                        _specterCurrent = _specterWalkBack;
+                    else if (movement.Y > 0)
+                        _specterCurrent = _specterWalkFront;
+                }
+
+                if (movement != Vector2.Zero)
+                    movement.Normalize();
+
+                movement *= MOVEMENT_SPEED;
+
+                Vector2 newPosition = _specterPosition;
+                newPosition.X += movement.X;
+                Rectangle playerBoxX = GetPlayerBox(newPosition);
+                if (HasCollision(playerBoxX))
+                {
+                    newPosition.X = _specterPosition.X;
+                }
+
+                newPosition.Y += movement.Y;
+                Rectangle playerBoxY = GetPlayerBox(newPosition);
+                if (HasCollision(playerBoxY))
+                {
+                    newPosition.Y = _specterPosition.Y;
+                }
+
+                _specterPosition = newPosition;
+
+                // Interacción
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.E)
+                    && !_previousKeyboardState.IsKeyDown(Keys.E)
+                )
+                {
+                    CheckForInteraction();
+                }
+
+                // Test de Combate
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.C)
+                    && !_previousKeyboardState.IsKeyDown(Keys.C)
+                )
+                {
+                    Console.WriteLine("Iniciando combate de prueba...");
+                    _game.IsMouseVisible = false;
+                    _game.ChangeScreen(new CombatScreen(_game, _currentMapName, _specterPosition));
+                    return;
+                }
+
+                // Actualización de Animación
+                if (_isMoving)
+                {
+                    _specterCurrent.Update(gameTime);
+                }
+                else
+                {
+                    _specterCurrent.CurrentFrame = 0;
+                }
+
+                // Actualización de Cámara
+                _cameraTransform = Matrix.CreateTranslation(
+                    -_specterPosition.X + (GraphicsDevice.Viewport.Width / 2),
+                    -_specterPosition.Y + (GraphicsDevice.Viewport.Height / 2),
+                    0
+                );
+            }
 
             _previousKeyboardState = currentKeyboardState;
         }
 
         public override void Draw(GameTime gameTime)
         {
-            // // Limpia la pantalla
-            // GraphicsDevice.Clear(Color.Black);
-
-            // 1. Dibuja el Mapa
-            // Le pasamos la matriz de la cámara
+            // Dibuja el Mapa (con cámara)
             _mapRenderer.Draw(SpriteBatch, _cameraTransform);
 
-            // 2. Dibuja al Jugador (usando la cámara)
+            // Dibuja al Jugador (con cámara)
             SpriteBatch.Begin(
-                transformMatrix: _cameraTransform, // Aplicamos la misma matriz
+                transformMatrix: _cameraTransform,
                 samplerState: SamplerState.PointClamp
             );
             _specterCurrent.Draw(SpriteBatch, _specterPosition);
 #if DEBUG
-            // Dibuja la hitbox del jugador en verde
             Rectangle playerBox = GetPlayerBox(_specterPosition);
             DrawRectangle(SpriteBatch, playerBox, Color.Green, 2);
-
-            // Dibuja todas las zonas de interacción en rojo
             foreach (var obj in _interactableObjects)
             {
                 DrawRectangle(SpriteBatch, obj.TriggerZone, Color.Red, 2);
             }
 #endif
-            // --- FIN DEL CÓDIGO DE DEPURACIÓN ---
+            SpriteBatch.End();
+
+            // Dibuja la UI (estática, sin cámara)
+            // Se dibuja en un lote separado para que esté encima de todo.
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            _interactionPanel.Draw(gameTime, SpriteBatch);
             SpriteBatch.End();
         }
 
-        // --- INICIO DE MODIFICACIÓN ---
         // Método de dibujo optimizado (usa _pixelTexture)
         private void DrawRectangle(
             SpriteBatch spriteBatch,
@@ -385,20 +452,26 @@ namespace Sequence_Break
             int thickness
         )
         {
-            // Usamos la textura _pixelTexture (creada en LoadContent)
-            spriteBatch.Draw(_pixelTexture, new Rectangle(rect.X, rect.Y, rect.Width, thickness), color);
+            spriteBatch.Draw(
+                _pixelTexture,
+                new Rectangle(rect.X, rect.Y, rect.Width, thickness),
+                color
+            );
             spriteBatch.Draw(
                 _pixelTexture,
                 new Rectangle(rect.X, rect.Y + rect.Height - thickness, rect.Width, thickness),
                 color
             );
-            spriteBatch.Draw(_pixelTexture, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
+            spriteBatch.Draw(
+                _pixelTexture,
+                new Rectangle(rect.X, rect.Y, thickness, rect.Height),
+                color
+            );
             spriteBatch.Draw(
                 _pixelTexture,
                 new Rectangle(rect.X + rect.Width - thickness, rect.Y, thickness, rect.Height),
                 color
             );
         }
-        // --- FIN DE MODIFICACIÓN ---
     }
 }
