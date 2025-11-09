@@ -51,6 +51,12 @@ namespace Sequence_Break
         //Lista de objetos interactuables
         private List<InteractableObject> _interactableObjects;
 
+        // --- Variables de UI ---
+        private InteractionPanel _interactionPanel;
+        private SpriteFont _uiFont;
+        private TextureAtlas _uiAtlas;
+        private string _currentInteraction = string.Empty; // Para saber que interacción está activa
+
         public GameplayScreen(Game1 game)
             : base(game) { }
 
@@ -108,6 +114,28 @@ namespace Sequence_Break
 
             _interactableObjects = new List<InteractableObject>();
             PopulateInteractableObjects();
+
+            // Cargar Assets de UI
+            try
+            {
+                _uiFont = Content.Load<SpriteFont>("fonts/IBMPlexMono");
+                _uiAtlas = TextureAtlas.FromFile(
+                    Content,
+                    "Interface/Combat/interface-combat-atlas-definition.xml"
+                );
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(
+                    $"Error cargando assets de UI para InteractionPanel: {ex.Message}"
+                );
+                throw;
+            }
+
+            // Inicializar Panel de Interaccion
+            _interactionPanel = new InteractionPanel(_uiFont, _uiAtlas, GraphicsDevice);
+            _interactionPanel.OnOptionSelected += HandleInteractionChoice; // seleccionar evento
+
             _previousKeyboardState = Keyboard.GetState();
         }
 
@@ -266,72 +294,95 @@ namespace Sequence_Break
                 Core.Graphics.ApplyChanges();
             }
 
-            // Movimiento
-            _isMoving = false;
-            Vector2 movement = Vector2.Zero;
-
-            if (currentKeyboardState.IsKeyDown(Keys.W) || currentKeyboardState.IsKeyDown(Keys.Up))
-                movement.Y = -1;
-            if (currentKeyboardState.IsKeyDown(Keys.S) || currentKeyboardState.IsKeyDown(Keys.Down))
-                movement.Y = 1;
-            if (currentKeyboardState.IsKeyDown(Keys.A) || currentKeyboardState.IsKeyDown(Keys.Left))
-                movement.X = -1;
-            if (
-                currentKeyboardState.IsKeyDown(Keys.D) || currentKeyboardState.IsKeyDown(Keys.Right)
-            )
-                movement.X = 1;
-
-            // Actualizar estado de animacion y 'isMoving'
-            if (movement != Vector2.Zero)
+            // Update
+            // Si el panel esta activo, se toma el control del input.
+            if (_interactionPanel.IsActive)
             {
-                _isMoving = true;
-                if (movement.X < 0)
-                    _specterCurrent = _specterWalkLeft;
-                else if (movement.X > 0)
-                    _specterCurrent = _specterWalkRight;
-                else if (movement.Y < 0)
-                    _specterCurrent = _specterWalkBack;
-                else if (movement.Y > 0)
-                    _specterCurrent = _specterWalkFront;
-            }
-
-            if (movement != Vector2.Zero)
-                movement.Normalize();
-
-            movement *= MOVEMENT_SPEED;
-
-            // Verificar colisiones
-            Vector2 newPosition = _specterPosition;
-            newPosition.X += movement.X;
-            Rectangle playerBoxX = GetPlayerBox(newPosition);
-            if (HasCollision(playerBoxX))
-            {
-                newPosition.X = _specterPosition.X;
-            }
-
-            newPosition.Y += movement.Y;
-            Rectangle playerBoxY = GetPlayerBox(newPosition);
-            if (HasCollision(playerBoxY))
-            {
-                newPosition.Y = _specterPosition.Y;
-            }
-
-            _specterPosition = newPosition;
-
-            // Logica interaccion
-            if (currentKeyboardState.IsKeyDown(Keys.E) && !_previousKeyboardState.IsKeyDown(Keys.E))
-            {
-                CheckForInteraction();
-            }
-            // Actualizar animacion
-            if (_isMoving)
-            {
-                _specterCurrent.Update(gameTime);
+                _interactionPanel.Update(gameTime);
             }
             else
+            // Si no, el jugador puede moverse e interactuar.
             {
-                _specterCurrent.CurrentFrame = 0;
-            }
+                // Movimiento
+                _isMoving = false;
+                Vector2 movement = Vector2.Zero;
+
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.W)
+                    || currentKeyboardState.IsKeyDown(Keys.Up)
+                )
+                    movement.Y = -1;
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.S)
+                    || currentKeyboardState.IsKeyDown(Keys.Down)
+                )
+                    movement.Y = 1;
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.A)
+                    || currentKeyboardState.IsKeyDown(Keys.Left)
+                )
+                    movement.X = -1;
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.D)
+                    || currentKeyboardState.IsKeyDown(Keys.Right)
+                )
+                    movement.X = 1;
+
+                // Actualizar estado de animacion y 'isMoving'
+                if (movement != Vector2.Zero)
+                {
+                    _isMoving = true;
+                    if (movement.X < 0)
+                        _specterCurrent = _specterWalkLeft;
+                    else if (movement.X > 0)
+                        _specterCurrent = _specterWalkRight;
+                    else if (movement.Y < 0)
+                        _specterCurrent = _specterWalkBack;
+                    else if (movement.Y > 0)
+                        _specterCurrent = _specterWalkFront;
+                }
+
+                if (movement != Vector2.Zero)
+                    movement.Normalize();
+
+                movement *= MOVEMENT_SPEED;
+
+                // Verificar colisiones
+                Vector2 newPosition = _specterPosition;
+                newPosition.X += movement.X;
+                Rectangle playerBoxX = GetPlayerBox(newPosition);
+                if (HasCollision(playerBoxX))
+                {
+                    newPosition.X = _specterPosition.X;
+                }
+
+                newPosition.Y += movement.Y;
+                Rectangle playerBoxY = GetPlayerBox(newPosition);
+                if (HasCollision(playerBoxY))
+                {
+                    newPosition.Y = _specterPosition.Y;
+                }
+
+                _specterPosition = newPosition;
+
+                // Logica interaccion
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.E)
+                    && !_previousKeyboardState.IsKeyDown(Keys.E)
+                )
+                {
+                    CheckForInteraction();
+                }
+                // Actualizar animacion
+                if (_isMoving)
+                {
+                    _specterCurrent.Update(gameTime);
+                }
+                else
+                {
+                    _specterCurrent.CurrentFrame = 0;
+                }
+            } // Fin del 'else'
 
             _previousKeyboardState = currentKeyboardState;
         }
@@ -353,6 +404,14 @@ namespace Sequence_Break
             );
 
             _specterCurrent.Draw(SpriteBatch, _specterPosition);
+
+            SpriteBatch.End();
+
+            // DIBUJAR UI
+            // Dibujamos la UI en un lote separado para que este siempre encima.
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+
+            _interactionPanel.Draw(gameTime, SpriteBatch);
 
             SpriteBatch.End();
         }
@@ -377,41 +436,103 @@ namespace Sequence_Break
 
         private void PerformInteraction(string objectName)
         {
-            // Switch para saber que hacer con cada objeto.
+            // Guardamos el objeto actual por si necesitamos reaccionar a una opción
+            _currentInteraction = objectName;
 
-            // Usamos Console.WriteLine para que el mensaje
-            // aparezca en la "CONSOLA DE DEPURACIÓN" (DEBUG CONSOLE) de VSCode.
+            // Switch para saber que hacer con cada objeto.
             switch (objectName)
             {
                 case "Cama":
-                    Console.WriteLine("No es momento de dormir. Hay un caso que resolver.");
                     // TO DO: Guardar partida aca (aparte de en el menu) y curar sanidad
+                    var camaOptions = new List<string> { "Guardar y descansar", "Ahora no" };
+                    _interactionPanel.Show(
+                        "No es momento de dormir. Hay un caso que resolver... pero podria descansar un momento.",
+                        camaOptions,
+                        null // Sin hablante
+                    );
                     break;
 
                 case "Escritorio":
-                    Console.WriteLine("Un monton de papeles... el rastro del Alquimista.");
-                    _game.ChangeScreen(new CaseScreen(_game));
-                    // TO DO: Poner la interfaz
+                    // TO DO: Poner la interfaz de los casos disponibles
+                    var escritorioOptions = new List<string> { "Investigar papeles", "Dejarlo" };
+                    _interactionPanel.Show(
+                        "Un monton de papeles... el rastro del Alquimista. Investigar?",
+                        escritorioOptions,
+                        null // Sin hablante
+                    );
                     break;
 
                 case "Bateria":
-                    Console.WriteLine("Una bateria de coche. Mantiene las luces encendidas.");
+                    _interactionPanel.Show(
+                        "Una bateria de coche. Mantiene las luces encendidas.",
+                        null, // Sin opciones
+                        null // Sin hablante
+                    );
                     break;
                 case "Puff":
-                    Console.WriteLine("Comodo, pero esta cubierto de polvo.");
+                    _interactionPanel.Show(
+                        "Comodo, pero esta cubierto de polvo.",
+                        null, // Sin opciones
+                        null // Sin hablante
+                    );
                     break;
 
                 case "Armas_Medicinas":
-                    Console.WriteLine(
-                        "Mi equipo. Un revolver, municion y supresores de disonancia."
-                    );
                     // TO DO: Abrir inventario aca
+                    var armasOptions = new List<string> { "Revisar equipo", "Dejarlo" };
+                    string armasTexto =
+                        "Mis armas, que casualmente fueron cambiadas por obra de una horrenda censura... No tendria sentido que me lleve esto a mi aventura, pero simulemos como que sirven de algo.";
+                    _interactionPanel.Show(armasTexto, armasOptions, null);
                     break;
 
                 default:
                     Console.WriteLine($"Interactuaste con un objeto sin lógica: {objectName}");
+                    _currentInteraction = string.Empty; // No hay lógica para esto
                     break;
             }
+        }
+
+        /// Maneja la respuesta del jugador desde el InteractionPanel.
+        /// <param name="optionIndex">El índice de la opción seleccionada (0, 1, 2...)</param>
+        private void HandleInteractionChoice(int optionIndex)
+        {
+            // Usamos la variable _currentInteraction para saber a que responde el jugador
+            switch (_currentInteraction)
+            {
+                case "Cama":
+                    if (optionIndex == 0) // "Guardar y descansar"
+                    {
+                        Console.WriteLine("Partida guardada y cordura recuperada (Lógica futura).");
+                        // logica de guardado y curacion
+                    }
+                    else // "Ahora no"
+                    {
+                        Console.WriteLine("El jugador decidió no descansar.");
+                    }
+                    break;
+
+                case "Escritorio":
+                    if (optionIndex == 0) // "Investigar papeles"
+                    {
+                        _game.ChangeScreen(new CaseScreen(_game));
+                    }
+                    else // "Dejarlo"
+                    {
+                        Console.WriteLine("El jugador dejó los papeles.");
+                    }
+                    break;
+
+                case "Armas_Medicinas":
+                    if (optionIndex == 0) // "Revisar equipo"
+                    {
+                        Console.WriteLine("Abriendo inventario (Lógica futura).");
+                        // inventario
+                    }
+                    break;
+            }
+
+            // Limpiamos la interacción actual
+            _currentInteraction = string.Empty;
         }
     }
 }
