@@ -34,15 +34,13 @@ namespace Sequence_Break
         }
 
         // variables de la UI de batalla
-
-        // Fuentes y Texturas
         private SpriteFont _uiFont;
         private Texture2D _pixel;
+        private Texture2D _backgroundTexture;
 
         // Sprites
         private TextureAtlas _enemyAtlas;
-        private const float ENEMY_SCALE = 4.0f; // Escalado del sprite del enemigo
-
+        private const float ENEMY_SCALE = 4.0f;
         private TextureAtlas _specterAtlas;
         private AnimatedSprite _specterSprite;
         private Vector2 _specterPosition;
@@ -62,9 +60,13 @@ namespace Sequence_Break
             EnemyAction,
             Won,
             Lost,
+            ShowMessage,
+            Won_End,
+            Lost_End,
         }
 
         private CombatState _currentState;
+        private CombatState _nextState;
 
         // logica menu de combate
         private string[] _menuOptions = { "ATAQUE", "GLITCH", "DEFENSA", "OBJETOS", "ESCAPAR" };
@@ -92,6 +94,9 @@ namespace Sequence_Break
         private Color _corduraColor = new Color(124, 176, 255);
         private Color _barBackgroundColor = new Color(40, 40, 40);
 
+        // Panel de Interaccion
+        private InteractionPanel _interactionPanel;
+
         private KeyboardState _previousKeyboardState;
 
         // Variables para guardar el estado de retorno
@@ -107,8 +112,19 @@ namespace Sequence_Break
 
         public override void LoadContent()
         {
-            // Cargar fuentes
             _uiFont = Content.Load<SpriteFont>("fonts/IBMPlexMono");
+
+            try
+            {
+                _backgroundTexture = Content.Load<Texture2D>("Interface/Combat/battle_background");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine(
+                    "ERROR: No se pudo cargar la imagen de fondo 'Interface/Combat/battle_background'."
+                );
+                throw;
+            }
 
             // Cargar Atlas del Enemigo
             try
@@ -166,16 +182,13 @@ namespace Sequence_Break
             int screenWidth = GraphicsDevice.Viewport.Width;
             int screenHeight = GraphicsDevice.Viewport.Height;
             int uiHeight = 250;
-
             _uiBoxMain = new Rectangle(0, screenHeight - uiHeight, screenWidth, uiHeight);
-
             _uiBoxLeft = new Rectangle(
                 _uiBoxMain.X,
                 _uiBoxMain.Y,
                 (int)(_uiBoxMain.Width * 0.25f),
                 _uiBoxMain.Height
             );
-
             _menuStartPosition = new Vector2(_uiBoxMain.X + 20, _uiBoxLeft.Y + 20);
 
             // Inicializar combatientes
@@ -191,17 +204,9 @@ namespace Sequence_Break
             };
 
             // Posiciones de Combatientes
-
-            // Posición Y compartida (para que estén alineados)
             float combatantY = screenHeight / 2 - 150;
+            _specterPosition = new Vector2(200, combatantY);
 
-            // Posicionar a Specter (Izquierda)
-            _specterPosition = new Vector2(
-                200, // 200px desde la izquierda
-                combatantY
-            );
-
-            // Posicionar al Enemigo (Derecha)
             float enemyScaledWidth = enemyAnimatedSprite.Region.SourceRectangle.Width * ENEMY_SCALE;
             _enemy = new Enemy
             {
@@ -209,30 +214,51 @@ namespace Sequence_Break
                 CurrentHP = 80,
                 MaxHP = 80,
                 AnimatedSprite = enemyAnimatedSprite,
-                Position = new Vector2(
-                    screenWidth - enemyScaledWidth - 200, // 200px desde la derecha
-                    combatantY
-                ),
+                Position = new Vector2(screenWidth - enemyScaledWidth - 200, combatantY),
             };
+
+            // Inicializar el panel de interacción
+            _interactionPanel = new InteractionPanel(_uiFont, _uiAtlas, GraphicsDevice);
 
             // Empezar el combate
             _currentState = CombatState.Start;
             _previousKeyboardState = Keyboard.GetState();
         }
 
+        private void ShowCombatMessage(string text, CombatState nextState, string speaker = null)
+        {
+            _interactionPanel.Show(text, null, speaker);
+            _nextState = nextState;
+            _currentState = CombatState.ShowMessage; // Pausa el juego
+        }
+
         public override void Update(GameTime gameTime)
         {
             KeyboardState currentKeyboardState = Keyboard.GetState();
 
-            // Actualizar ambas animaciones
             _enemy.AnimatedSprite.Update(gameTime);
             _specterSprite.Update(gameTime);
 
-            // Estados
+            if (_interactionPanel.IsActive)
+            {
+                _interactionPanel.Update(gameTime);
+                if (!_interactionPanel.IsActive)
+                {
+                    // Cuando el panel se cierra, pasamos al siguiente estado
+                    _currentState = _nextState;
+                }
+                _previousKeyboardState = currentKeyboardState;
+                return; // No procesar nada más
+            }
+
             switch (_currentState)
             {
                 case CombatState.Start:
-                    _currentState = CombatState.PlayerSelectAction;
+                    ShowCombatMessage(
+                        $"{_enemy.Name} Inicia el combate",
+                        CombatState.PlayerSelectAction,
+                        null
+                    );
                     break;
 
                 case CombatState.PlayerSelectAction:
@@ -240,7 +266,6 @@ namespace Sequence_Break
                     break;
 
                 case CombatState.PlayerAction:
-                    Console.WriteLine("Acción del jugador terminada.");
                     if (_enemy.CurrentHP <= 0)
                     {
                         _currentState = CombatState.Won;
@@ -252,42 +277,32 @@ namespace Sequence_Break
                     break;
 
                 case CombatState.EnemyTurn:
-                    Console.WriteLine("Turno del enemigo. ¡Atacando!");
-                    _currentState = CombatState.EnemyAction;
+                    ShowCombatMessage($"Turno de {_enemy.Name}.", CombatState.EnemyAction, null);
                     break;
 
                 case CombatState.EnemyAction:
                     _player.CurrentHP -= 10;
-                    Console.WriteLine($"El enemigo ataca. HP de Luka: {_player.CurrentHP}");
-
-                    if (_player.CurrentHP <= 0)
-                    {
-                        _currentState = CombatState.Lost;
-                    }
-                    else
-                    {
-                        _currentState = CombatState.PlayerSelectAction;
-                    }
+                    ShowCombatMessage(
+                        $"{_enemy.Name} ataca. -10 HP",
+                        _player.CurrentHP <= 0 ? CombatState.Lost : CombatState.PlayerSelectAction,
+                        null
+                    );
                     break;
 
                 case CombatState.Won:
-                    if (
-                        currentKeyboardState.IsKeyDown(Keys.Enter)
-                        && !_previousKeyboardState.IsKeyDown(Keys.Enter)
-                    )
-                    {
-                        _game.ChangeScreen(new CaseScreen(_game, _returnMapName, _returnPosition));
-                    }
+                    ShowCombatMessage("COMBATE GANADO!", CombatState.Won_End);
+                    break;
+
+                case CombatState.Won_End:
+                    _game.ChangeScreen(new CaseScreen(_game, _returnMapName, _returnPosition));
                     break;
 
                 case CombatState.Lost:
-                    if (
-                        currentKeyboardState.IsKeyDown(Keys.Enter)
-                        && !_previousKeyboardState.IsKeyDown(Keys.Enter)
-                    )
-                    {
-                        _game.ChangeScreen(new MainMenuScreen(_game));
-                    }
+                    ShowCombatMessage("HAS CAIDO...", CombatState.Lost_End);
+                    break;
+
+                case CombatState.Lost_End:
+                    _game.ChangeScreen(new GameplayScreen(_game));
                     break;
             }
 
@@ -296,7 +311,6 @@ namespace Sequence_Break
 
         private void HandlePlayerInput(KeyboardState kbs)
         {
-            // menu navigation
             if (
                 kbs.IsKeyDown(Keys.W) && !_previousKeyboardState.IsKeyDown(Keys.W)
                 || kbs.IsKeyDown(Keys.Up) && !_previousKeyboardState.IsKeyDown(Keys.Up)
@@ -317,7 +331,6 @@ namespace Sequence_Break
                     _selectedOption = 0;
             }
 
-            // Seleccionar opcion
             if (
                 kbs.IsKeyDown(Keys.Enter) && !_previousKeyboardState.IsKeyDown(Keys.Enter)
                 || kbs.IsKeyDown(Keys.E) && !_previousKeyboardState.IsKeyDown(Keys.E)
@@ -330,21 +343,23 @@ namespace Sequence_Break
         private void PerformPlayerAction()
         {
             string action = _menuOptions[_selectedOption];
+            string message = "";
+            string speaker = null;
 
             switch (action)
             {
                 case "ATAQUE":
-                    Console.WriteLine("Luka ataca!");
+                    message = "Luka ataca! HP del enemigo -25.";
                     _enemy.CurrentHP -= 25;
-                    _currentState = CombatState.PlayerAction;
+                    ShowCombatMessage(message, CombatState.PlayerAction, speaker);
                     break;
                 case "GLITCH":
-                    Console.WriteLine("Usando GLITCH... (no implementado)");
-                    _currentState = CombatState.PlayerAction;
+                    message = "Luka usa GLITCH... (no implementado).";
+                    ShowCombatMessage(message, CombatState.PlayerAction, speaker);
                     break;
                 case "DEFENSA":
-                    Console.WriteLine("Luka se defiende... (no implementado)");
-                    _currentState = CombatState.PlayerAction;
+                    message = "Luka se defiende... (no implementado).";
+                    ShowCombatMessage(message, CombatState.PlayerAction, speaker);
                     break;
                 case "OBJETOS":
                     Console.WriteLine("Abriendo inventario... (no implementado)");
@@ -358,135 +373,147 @@ namespace Sequence_Break
 
         public override void Draw(GameTime gameTime)
         {
+            // Dibujar Fondo
+            SpriteBatch.Begin(samplerState: SamplerState.LinearClamp);
+            SpriteBatch.Draw(_backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.White);
+            SpriteBatch.End();
+
+            // Dibujar Sprites y UI de Combate
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
             const float uiScale = 0.8f;
 
-            // dibujar peleadores
-
-            // Specter (Izquierda)
+            // Dibujar peleadores
             _specterSprite.Draw(SpriteBatch, _specterPosition);
-
-            // Enemigo (Derecha)
             _enemy.AnimatedSprite.Draw(SpriteBatch, _enemy.Position);
 
-            // Dibujar las cajas de la UI
-            DrawNineSlicePanel(SpriteBatch, _uiBoxMain);
-            DrawNineSlicePanel(SpriteBatch, _uiBoxLeft);
+            bool showCombatUI =
+                _currentState != CombatState.Start
+                && _currentState != CombatState.Won
+                && _currentState != CombatState.Lost
+                && _currentState != CombatState.Won_End
+                && _currentState != CombatState.Lost_End;
 
-            // Dibujar el menú (Caja Izquierda)
-            for (int i = 0; i < _menuOptions.Length; i++)
+            if (showCombatUI)
             {
-                Color color = (i == _selectedOption) ? _menuSelectedColor : _menuNormalColor;
-                string optionText =
-                    (i == _selectedOption) ? $"[ {_menuOptions[i]} ]" : $"[ {_menuOptions[i]} ]";
+                // Dibujar las cajas de la UI
+                DrawNineSlicePanel(SpriteBatch, _uiBoxMain);
+                DrawNineSlicePanel(SpriteBatch, _uiBoxLeft);
 
-                Vector2 position = new Vector2(
-                    _menuStartPosition.X,
-                    _menuStartPosition.Y + (i * 40)
-                );
+                // Dibujar el menú (Caja Izquierda)
+                // El menú siempre es visible, pero atenuado si no es seleccionable
+                for (int i = 0; i < _menuOptions.Length; i++)
+                {
+                    Color color;
+                    if (_currentState == CombatState.PlayerSelectAction)
+                    {
+                        // Turno del jugador: usar colores normales y seleccionados
+                        color = (i == _selectedOption) ? _menuSelectedColor : _menuNormalColor;
+                    }
+                    else
+                    {
+                        // No es el turno: atenuar todos los colores
+                        color =
+                            ((i == _selectedOption) ? _menuSelectedColor : _menuNormalColor) * 0.5f;
+                    }
 
+                    string optionText = $"[ {_menuOptions[i]} ]";
+                    Vector2 position = new Vector2(
+                        _menuStartPosition.X,
+                        _menuStartPosition.Y + (i * 40)
+                    );
+                    SpriteBatch.DrawString(
+                        _uiFont,
+                        optionText,
+                        position,
+                        color,
+                        0f,
+                        Vector2.Zero,
+                        uiScale,
+                        SpriteEffects.None,
+                        0f
+                    );
+                }
+
+                // Dibujar Stats (Caja Derecha)
+                float padding = 30f;
+                float statsAreaX = _uiBoxLeft.Right + padding;
+                float rightAlignX = _uiBoxMain.Right - padding;
+                float currentY = _uiBoxLeft.Top + 20;
+
+                Vector2 namePosition = new Vector2(statsAreaX, currentY);
                 SpriteBatch.DrawString(
                     _uiFont,
-                    optionText,
-                    position,
-                    color,
+                    _player.Name,
+                    namePosition,
+                    Color.White,
                     0f,
                     Vector2.Zero,
                     uiScale,
                     SpriteEffects.None,
                     0f
                 );
+
+                string balasText = $"Balas: {_player.Balas}/{_player.MaxBalas}";
+                Vector2 balasTextSize = _uiFont.MeasureString(balasText) * uiScale;
+                Vector2 balasPosition = new Vector2(rightAlignX - balasTextSize.X, currentY);
+                SpriteBatch.DrawString(
+                    _uiFont,
+                    balasText,
+                    balasPosition,
+                    Color.Yellow,
+                    0f,
+                    Vector2.Zero,
+                    uiScale,
+                    SpriteEffects.None,
+                    0f
+                );
+
+                currentY += 45;
+
+                float hpLabelWidth = _uiFont.MeasureString("HP").X * uiScale;
+                float corduraLabelWidth = _uiFont.MeasureString("Cordura").X * uiScale;
+                float maxLabelWidth = Math.Max(hpLabelWidth, corduraLabelWidth);
+                float barStartX = statsAreaX + maxLabelWidth + 10;
+                string maxValueText = "100/100";
+                float valueTextWidth = _uiFont.MeasureString(maxValueText).X * uiScale;
+                float valueTextStartX = rightAlignX - valueTextWidth;
+                float fixedBarWidth = valueTextStartX - barStartX - 10;
+                Vector2 barRowPosition = new Vector2(statsAreaX, currentY);
+
+                DrawStatBar(
+                    "HP",
+                    _player.CurrentHP,
+                    _player.MaxHP,
+                    barRowPosition,
+                    _hpColor,
+                    uiScale,
+                    barStartX,
+                    fixedBarWidth,
+                    valueTextStartX
+                );
+
+                currentY += 35;
+                barRowPosition.Y = currentY;
+
+                DrawStatBar(
+                    "Cordura",
+                    _player.CurrentCordura,
+                    _player.MaxCordura,
+                    barRowPosition,
+                    _corduraColor,
+                    uiScale,
+                    barStartX,
+                    fixedBarWidth,
+                    valueTextStartX
+                );
             }
 
-            // Dibujar Stats (Caja Derecha)
-            float padding = 30f;
-            float statsAreaX = _uiBoxLeft.Right + padding;
-            float rightAlignX = _uiBoxMain.Right - padding;
-            float currentY = _uiBoxLeft.Top + 20;
+            SpriteBatch.End();
 
-            Vector2 namePosition = new Vector2(statsAreaX, currentY);
-            SpriteBatch.DrawString(
-                _uiFont,
-                _player.Name,
-                namePosition,
-                Color.White,
-                0f,
-                Vector2.Zero,
-                uiScale,
-                SpriteEffects.None,
-                0f
-            );
-
-            string balasText = $"Balas: {_player.Balas}/{_player.MaxBalas}";
-            Vector2 balasTextSize = _uiFont.MeasureString(balasText) * uiScale;
-            Vector2 balasPosition = new Vector2(rightAlignX - balasTextSize.X, currentY);
-
-            SpriteBatch.DrawString(
-                _uiFont,
-                balasText,
-                balasPosition,
-                Color.Yellow,
-                0f,
-                Vector2.Zero,
-                uiScale,
-                SpriteEffects.None,
-                0f
-            );
-
-            currentY += 45;
-
-            float hpLabelWidth = _uiFont.MeasureString("HP").X * uiScale;
-            float corduraLabelWidth = _uiFont.MeasureString("Cordura").X * uiScale;
-            float maxLabelWidth = Math.Max(hpLabelWidth, corduraLabelWidth);
-
-            float barStartX = statsAreaX + maxLabelWidth + 10;
-
-            string maxValueText = "100/100";
-            float valueTextWidth = _uiFont.MeasureString(maxValueText).X * uiScale;
-            float valueTextStartX = rightAlignX - valueTextWidth;
-
-            float fixedBarWidth = valueTextStartX - barStartX - 10;
-
-            Vector2 barRowPosition = new Vector2(statsAreaX, currentY);
-
-            DrawStatBar(
-                "HP",
-                _player.CurrentHP,
-                _player.MaxHP,
-                barRowPosition,
-                _hpColor,
-                uiScale,
-                barStartX,
-                fixedBarWidth,
-                valueTextStartX
-            );
-
-            currentY += 35;
-            barRowPosition.Y = currentY;
-
-            DrawStatBar(
-                "Cordura",
-                _player.CurrentCordura,
-                _player.MaxCordura,
-                barRowPosition,
-                _corduraColor,
-                uiScale,
-                barStartX,
-                fixedBarWidth,
-                valueTextStartX
-            );
-
-            // Dibujar mensajes de estado (Victoria/Derrota)
-            if (_currentState == CombatState.Won)
-            {
-                DrawCenterText("COMBATE GANADO\n[Presiona ENTER]", 1.0f);
-            }
-            else if (_currentState == CombatState.Lost)
-            {
-                DrawCenterText("HAS CAÍDO...\n[Presiona ENTER]", 1.0f);
-            }
-
+            // Dibujar el Panel de Interacción (SIEMPRE AL FINAL, ENCIMA DE TODO)
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            _interactionPanel.Draw(gameTime, SpriteBatch);
             SpriteBatch.End();
         }
 
@@ -518,9 +545,7 @@ namespace Sequence_Break
 
             Vector2 labelSize = _uiFont.MeasureString(label) * uiScale;
             int barHeight = 20;
-
             float barY = position.Y + (labelSize.Y / 2) - (barHeight / 2);
-
             string statText = $"{current}/{max}";
             Vector2 textPos = new Vector2(valueTextStartX, position.Y);
 
@@ -594,8 +619,10 @@ namespace Sequence_Break
             const int sourceSpriteSize = 64;
             const float scale = 1.0f;
             int cornerSize = (int)(sourceSpriteSize * scale);
+
             Texture2D texture = _uiTopLeft.Region.Texture;
 
+            // Esquinas
             spriteBatch.Draw(
                 texture,
                 new Rectangle(destination.X, destination.Y, cornerSize, cornerSize),
@@ -635,6 +662,10 @@ namespace Sequence_Break
                 _uiBottomRight.Region.SourceRectangle,
                 Color.White
             );
+
+            // Bordes (con corrección de inflate)
+            Rectangle topCenterSource = _uiTopCenter.Region.SourceRectangle;
+            topCenterSource.Inflate(-1, -1);
             spriteBatch.Draw(
                 texture,
                 new Rectangle(
@@ -643,9 +674,12 @@ namespace Sequence_Break
                     destination.Width - (cornerSize * 2),
                     cornerSize
                 ),
-                _uiTopCenter.Region.SourceRectangle,
+                topCenterSource,
                 Color.White
             );
+
+            Rectangle bottomCenterSource = _uiBottomCenter.Region.SourceRectangle;
+            bottomCenterSource.Inflate(-1, -1);
             spriteBatch.Draw(
                 texture,
                 new Rectangle(
@@ -654,9 +688,12 @@ namespace Sequence_Break
                     destination.Width - (cornerSize * 2),
                     cornerSize
                 ),
-                _uiBottomCenter.Region.SourceRectangle,
+                bottomCenterSource,
                 Color.White
             );
+
+            Rectangle middleLeftSource = _uiMiddleLeft.Region.SourceRectangle;
+            middleLeftSource.Inflate(-1, -1);
             spriteBatch.Draw(
                 texture,
                 new Rectangle(
@@ -665,9 +702,12 @@ namespace Sequence_Break
                     cornerSize,
                     destination.Height - (cornerSize * 2)
                 ),
-                _uiMiddleLeft.Region.SourceRectangle,
+                middleLeftSource,
                 Color.White
             );
+
+            Rectangle middleRightSource = _uiMiddleRight.Region.SourceRectangle;
+            middleRightSource.Inflate(-1, -1);
             spriteBatch.Draw(
                 texture,
                 new Rectangle(
@@ -676,9 +716,13 @@ namespace Sequence_Break
                     cornerSize,
                     destination.Height - (cornerSize * 2)
                 ),
-                _uiMiddleRight.Region.SourceRectangle,
+                middleRightSource,
                 Color.White
             );
+
+            // Centro
+            Rectangle middleCenterSource = _uiMiddleCenter.Region.SourceRectangle;
+            middleCenterSource.Inflate(-1, -1);
             spriteBatch.Draw(
                 texture,
                 new Rectangle(
@@ -687,7 +731,7 @@ namespace Sequence_Break
                     destination.Width - (cornerSize * 2),
                     destination.Height - (cornerSize * 2)
                 ),
-                _uiMiddleCenter.Region.SourceRectangle,
+                middleCenterSource,
                 Color.White
             );
         }

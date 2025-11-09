@@ -72,3 +72,4 @@ C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\StbImageSharp.dll
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\StbTrueTypeSharp.dll
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\XNAssets.MonoGame.dll
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\enemies\demo\enemy-1-texture-atlas.xml
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\Interface\Combat\battle_background.xnb

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Sequence_Break")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+edccebdac2ad57e3be94eebfa5d79df105179955")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2ad39a1f06edba6244f24f612241c66c92176b82")]
 [assembly: System.Reflection.AssemblyProductAttribute("Sequence_Break")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Sequence_Break")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

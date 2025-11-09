@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>c:/code/Sequence-Break/Sequence_Break/Content/maps/demo/textures/RecepcionTileset.png</SourceFile>
-  <SourceTime>2025-11-02T19:17:19.1090791-03:00</SourceTime>
+  <SourceTime>2025-11-09T17:05:25.2795916-03:00</SourceTime>
   <DestFile>c:/code/Sequence-Break/Sequence_Break/Content/bin/DesktopGL/maps/demo/textures/RecepcionTileset.xnb</DestFile>
-  <DestTime>2025-11-09T15:10:59.5616021-03:00</DestTime>
+  <DestTime>2025-11-09T18:32:32.4042745-03:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2025-10-20T11:25:32-03:00</ImporterTime>
   <Processor>TextureProcessor</Processor>
