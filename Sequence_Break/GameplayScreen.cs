@@ -191,6 +191,10 @@ namespace Sequence_Break
             _collisionBarriers.Add(
                 new Rectangle(mapX + (3 * scale), mapY + (4 * scale), 35 * scale, 15 * scale)
             );
+            // Televisor
+            _collisionBarriers.Add(
+                new Rectangle(mapX + (91 * scale), mapY + (68 * scale), 32 * scale, 6 * scale)
+            );
         }
 
         private void PopulateInteractableObjects()
@@ -251,6 +255,16 @@ namespace Sequence_Break
             );
             _interactableObjects.Add(
                 new InteractableObject { Name = "Armas_Medicinas", TriggerZone = weaponsTrigger }
+            );
+            // Televisor
+            Rectangle tvTrigger = new Rectangle(
+                mapX + (88 * scale),
+                mapY + (65 * scale),
+                39 * scale,
+                10 * scale
+            );
+            _interactableObjects.Add(
+                new InteractableObject { Name = "Televisor", TriggerZone = tvTrigger }
             );
         }
 
@@ -483,6 +497,13 @@ namespace Sequence_Break
                     string armasTexto =
                         "Mis armas, que casualmente fueron cambiadas por obra de una horrenda censura... No tendria sentido que me lleve esto a mi aventura, pero simulemos como que sirven de algo.";
                     _interactionPanel.Show(armasTexto, armasOptions, null);
+                    break;
+                case "Televisor":
+                    _interactionPanel.Show(
+                        "Mi television, aunque apagada ahora mismo.",
+                        null, // Sin opciones
+                        null // Sin hablante
+                    );
                     break;
 
                 default:
