@@ -21,6 +21,8 @@ namespace Sequence_Break
 
             // Llama a base.Initialize()
             // Esto ejecuta Core.Initialize() y Game1.LoadContent()
+            Core.Graphics.IsFullScreen = SettingsManager.Data.IsFullscreen;
+            Core.Graphics.ApplyChanges();
             base.Initialize();
             //    Ahora que base.Initialize() y base.LoadContent()
             //    han terminado, tanto Core.GraphicsDevice como Core.Content
