@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+  <Texture>textures/Specter_shoot</Texture>
+  <Regions>
+    <Region name="luka-idle-1" x="0" y="0" width="17" height="39" />
+    <Region name="luka-attack-1" x="17" y="1" width="18" height="39" />
+    <Region name="luka-attack-2" x="35" y="0" width="25" height="39" />
+    <Region name="luka-attack-3" x="60" y="1" width="25" height="39" />
+    <Region name="luka-attack-4" x="85" y="0" width="25" height="39" />
+  </Regions>
+  <Animations>
+    <Animation name="luka-idle" delay="150">
+      <Frame region="luka-idle-1" />
+    </Animation>
+    <Animation name="luka-attack" delay="150">
+      <Frame region="luka-attack-1" />
+      <Frame region="luka-attack-2" />
+      <Frame region="luka-attack-3" />
+      <Frame region="luka-attack-4" />
+    </Animation>
+  </Animations>
+</TextureAtlas>

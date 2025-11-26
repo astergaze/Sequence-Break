@@ -75,3 +75,7 @@ C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\enemies\
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\Interface\Combat\battle_background.xnb
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\MaybeMain.ogg
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\MaybeMain.xnb
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter-attack-atlas-definition.xml
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\Specter_shoot.xnb
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\combat\hit-effect-atlas-definition.xml
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\combat\hit-spritesheet.xnb

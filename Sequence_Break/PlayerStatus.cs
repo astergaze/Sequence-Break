@@ -21,6 +21,7 @@ namespace Sequence_Break
 
         public static int CurrentSanity = 100;
         public static int MaxSanity = 100;
+        public static int Perception = 5;
 
         // --- INVENTARIO ---
         public static ItemData CurrentWeapon;

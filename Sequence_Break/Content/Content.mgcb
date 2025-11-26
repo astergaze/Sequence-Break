@@ -84,6 +84,21 @@
 /processorParam:TextureFormat=Color
 /build:maps/demo/textures/RecepcionTileset.png
 
+#begin textures/combat/hit-effect-atlas-definition.xml
+/copy:textures/combat/hit-effect-atlas-definition.xml
+
+#begin textures/combat/hit-spritesheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/combat/hit-spritesheet.png
+
 #begin textures/enemies/demo/enemy-1-texture-atlas.xml
 /copy:textures/enemies/demo/enemy-1-texture-atlas.xml;textures/enemies/demo/enemy-1-atlas-definition.xml
 
@@ -158,6 +173,21 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:textures/Specter_room.png
+
+#begin textures/Specter_shoot.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/Specter_shoot.png
+
+#begin textures/Specter-attack-atlas-definition.xml
+/copy:textures/Specter-attack-atlas-definition.xml
 
 #begin textures/Specter-back-atlas-definition.xml
 /copy:textures/Specter-back-atlas-definition.xml
