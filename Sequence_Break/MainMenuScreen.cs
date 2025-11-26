@@ -15,11 +15,11 @@ namespace Sequence_Break
 
         private Song _menuMusic;
 
-        // Lógica de Glitch
+        // Logica de Glitch
         private float _glitchTimer;
         private bool _isGlitching;
 
-        // Opciones del Menú
+        // Opciones del Menu
         private string[] _menuOptions =
         {
             "[ EMPEZAR ]",
@@ -38,9 +38,13 @@ namespace Sequence_Break
         private List<Rectangle> _menuOptionRects;
         private Color _menuNormalColor = Color.White;
         private Color _menuHoverColor = new Color(200, 100, 255);
+        private Color _menuDisabledColor = Color.Gray * 0.5f; // Color para cuando no hay savefile
 
         // Mouse
         private MouseState _previousMouseState;
+
+        // Estado del Savefile
+        private bool _hasSaveFile;
 
         public MainMenuScreen(Game1 game)
             : base(game)
@@ -53,6 +57,9 @@ namespace Sequence_Break
         {
             _titleFont = Content.Load<SpriteFont>("fonts/BebasNeue");
             _menuFont = Content.Load<SpriteFont>("fonts/IBMPlexMono");
+
+            // Verificar si existe partida guardada al cargar el menú
+            _hasSaveFile = SaveManager.SaveFileExists();
 
             try
             {
@@ -133,6 +140,10 @@ namespace Sequence_Break
             {
                 if (_menuOptionRects[i].Contains(mousePosition))
                 {
+                    // Si es la opcion CONTINUAR y no hay savefile, no la seleccionamos
+                    if (i == 1 && !_hasSaveFile)
+                        continue;
+
                     _selectedMenuIndex = i;
                     break;
                 }
@@ -148,15 +159,35 @@ namespace Sequence_Break
                 switch (_selectedMenuIndex)
                 {
                     case 0: // EMPEZAR
+                        // Reiniciamos el bucle (borramos todo)
+                        PlayerStatus.Initialize();
+
                         MediaPlayer.Stop();
                         _game.IsMouseVisible = false;
                         _game.ChangeScreen(new GameplayScreen(_game));
                         break;
+
                     case 1: // CONTINUAR
+                        if (_hasSaveFile)
+                        {
+                            // Cargamos los datos del disco a la memoria RAM (PlayerStatus)
+                            if (SaveManager.LoadGame())
+                            {
+                                MediaPlayer.Stop();
+                                _game.IsMouseVisible = false;
+
+                                // Cargamos GameplayScreen. Como los datos ya estan en PlayerStatus,
+                                // el juego usara la vida e items guardados.
+                                // TO DO: hacer que spawnee al lado de la cama
+                                _game.ChangeScreen(new GameplayScreen(_game));
+                            }
+                        }
                         break;
+
                     case 2: // OPCIONES
                         _game.ChangeScreen(new OptionsScreen(_game));
                         break;
+
                     case 3: // SALIR
                         MediaPlayer.Stop();
                         _game.Exit();
@@ -213,13 +244,23 @@ namespace Sequence_Break
             // Opciones del Menu
             for (int i = 0; i < _menuOptions.Length; i++)
             {
+                // Determinamos el estado
                 bool isSelected = (_selectedMenuIndex == i);
+                bool isDisabled = (i == 1 && !_hasSaveFile); // Deshabilitar "Continuar" si no hay save
+
                 string text = isSelected ? _menuOptionsHover[i] : _menuOptions[i];
-                Color color = isSelected ? _menuHoverColor : _menuNormalColor;
+
+                Color color = _menuNormalColor;
+                if (isDisabled)
+                    color = _menuDisabledColor;
+                else if (isSelected)
+                    color = _menuHoverColor;
+
                 Vector2 textSize = _menuFont.MeasureString(text);
                 Rectangle rect = _menuOptionRects[i];
                 float posX = rect.X + (rect.Width / 2f) - (textSize.X / 2f);
                 float posY = rect.Y;
+
                 SpriteBatch.DrawString(_menuFont, text, new Vector2(posX, posY), color);
             }
 

@@ -61,6 +61,12 @@ namespace Sequence_Break
         // Camara
         private Matrix _cameraTransform;
 
+        // Variable del menu
+        private PauseMenu _pauseMenu;
+
+        // Variable del inventario
+        private InventoryMenu _inventoryMenu;
+
         // Constructor por defecto
         public CaseScreen(Game1 game)
             : base(game)
@@ -146,6 +152,11 @@ namespace Sequence_Break
             _interactionPanel.OnOptionSelected += HandleInteractionChoice; // Suscribirse al evento
 
             _previousKeyboardState = Keyboard.GetState();
+            // Inicializar el PauseMenu
+            // Pasamos 'this' para que el menu sepa que esta es la pantalla actual
+            _pauseMenu = new PauseMenu(_game, this, _uiFont, GraphicsDevice);
+            // Inicializar el inventario
+            _inventoryMenu = new InventoryMenu(_game, _uiFont, GraphicsDevice);
         }
 
         private void LoadMap(string mapName)
@@ -290,10 +301,38 @@ namespace Sequence_Break
 
         public override void Update(GameTime gameTime)
         {
-            KeyboardState currentKeyboardState = Keyboard.GetState();
+            // Actualizar el menu primero
+            _pauseMenu.Update(gameTime);
 
-            if (currentKeyboardState.IsKeyDown(Keys.Escape))
-                _game.Exit(); // TO DO: Pausa
+            // si esta pausado, no ejecutamos nada mas
+            if (_pauseMenu.IsActive)
+                return;
+
+            KeyboardState currentKeyboardState = Keyboard.GetState();
+            // Abrir inventario
+            if (
+                (
+                    currentKeyboardState.IsKeyDown(Keys.Tab)
+                    && !_previousKeyboardState.IsKeyDown(Keys.Tab)
+                )
+            )
+            {
+                _inventoryMenu.Toggle();
+            }
+            // Si el inventario abierto, actualizamos y se bloquea el resto del juego
+            if (_inventoryMenu.IsActive)
+            {
+                _inventoryMenu.Update(gameTime);
+                _previousKeyboardState = currentKeyboardState; // Actualizar estado de teclado
+                return; // Salir para no mover al personaje
+            }
+            if (
+                currentKeyboardState.IsKeyDown(Keys.Escape)
+                && !_previousKeyboardState.IsKeyDown(Keys.Escape)
+            )
+            {
+                _pauseMenu.Show();
+            }
 
             if (
                 currentKeyboardState.IsKeyDown(Keys.F11)
@@ -427,51 +466,19 @@ namespace Sequence_Break
                 samplerState: SamplerState.PointClamp
             );
             _specterCurrent.Draw(SpriteBatch, _specterPosition);
-#if DEBUG
-            Rectangle playerBox = GetPlayerBox(_specterPosition);
-            DrawRectangle(SpriteBatch, playerBox, Color.Green, 2);
-            foreach (var obj in _interactableObjects)
-            {
-                DrawRectangle(SpriteBatch, obj.TriggerZone, Color.Red, 2);
-            }
-#endif
             SpriteBatch.End();
 
             // Dibuja la UI (estática, sin cámara)
             // Se dibuja en un lote separado para que esté encima de todo.
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             _interactionPanel.Draw(gameTime, SpriteBatch);
+            // Dibujar inventario
+            _inventoryMenu.Draw(SpriteBatch);
             SpriteBatch.End();
-        }
-
-        // Método de dibujo optimizado (usa _pixelTexture)
-        private void DrawRectangle(
-            SpriteBatch spriteBatch,
-            Rectangle rect,
-            Color color,
-            int thickness
-        )
-        {
-            spriteBatch.Draw(
-                _pixelTexture,
-                new Rectangle(rect.X, rect.Y, rect.Width, thickness),
-                color
-            );
-            spriteBatch.Draw(
-                _pixelTexture,
-                new Rectangle(rect.X, rect.Y + rect.Height - thickness, rect.Width, thickness),
-                color
-            );
-            spriteBatch.Draw(
-                _pixelTexture,
-                new Rectangle(rect.X, rect.Y, thickness, rect.Height),
-                color
-            );
-            spriteBatch.Draw(
-                _pixelTexture,
-                new Rectangle(rect.X + rect.Width - thickness, rect.Y, thickness, rect.Height),
-                color
-            );
+            // Dibujar menu de pausa
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            _pauseMenu.Draw(SpriteBatch);
+            SpriteBatch.End();
         }
     }
 }

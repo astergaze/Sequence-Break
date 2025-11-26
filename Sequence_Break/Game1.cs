@@ -15,30 +15,28 @@ namespace Sequence_Break
         protected override void Initialize()
         {
             IsMouseVisible = true;
-
-            // crea la instancia de la pantalla
             _currentScreen = new MainMenuScreen(this);
 
-            // Llama a base.Initialize()
-            // Esto ejecuta Core.Initialize() y Game1.LoadContent()
             Core.Graphics.IsFullScreen = SettingsManager.Data.IsFullscreen;
             Core.Graphics.ApplyChanges();
+            PlayerStatus.Initialize();
             base.Initialize();
-            //    Ahora que base.Initialize() y base.LoadContent()
-            //    han terminado, tanto Core.GraphicsDevice como Core.Content
-            //    existen y son seguros de usar.
+
             _currentScreen.LoadContent();
         }
 
-        public void ChangeScreen(Screen newScreen)
+        // Si 'loadContent' es false, asumimos que la pantalla ya existe y tiene sus datos.
+        public void ChangeScreen(Screen newScreen, bool loadContent = true)
         {
             _currentScreen = newScreen;
-            _currentScreen.LoadContent();
+            if (loadContent)
+            {
+                _currentScreen.LoadContent();
+            }
         }
 
         protected override void LoadContent()
         {
-            // Llama a base.LoadContent() para inicializar Core.Content
             base.LoadContent();
         }
 

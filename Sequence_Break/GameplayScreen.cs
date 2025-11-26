@@ -27,35 +27,38 @@ namespace Sequence_Break
 
         // Variables de Control
         private const float MOVEMENT_SPEED = 5.0f;
-        private KeyboardState _previousKeyboardState; // Para F11
+        private KeyboardState _previousKeyboardState;
 
         // Constantes de Tamaño y Colision
         private const float PLAYER_SCALE = 3.0f;
-        private const int PLAYER_BASE_WIDTH = 22; // Ancho base del sprite frontal (en píxeles)
-        private const int PLAYER_BASE_HEIGHT = 40; // Alto base del sprite frontal (en píxeles)
+        private const int PLAYER_BASE_WIDTH = 22;
+        private const int PLAYER_BASE_HEIGHT = 40;
 
-        // Referencia de tamaño fijo (ya escalado)
         private const float PLAYER_REFERENCE_WIDTH = PLAYER_BASE_WIDTH * PLAYER_SCALE;
         private const float PLAYER_REFERENCE_HEIGHT = PLAYER_BASE_HEIGHT * PLAYER_SCALE;
 
         // Lista de barreras de colision
         private List<Rectangle> _collisionBarriers;
 
-        //Objeto interactuable
+        // Objeto interactuable
         private struct InteractableObject
         {
             public string Name;
             public Rectangle TriggerZone;
         }
 
-        //Lista de objetos interactuables
+        // Lista de objetos interactuables
         private List<InteractableObject> _interactableObjects;
 
         // --- Variables de UI ---
         private InteractionPanel _interactionPanel;
         private SpriteFont _uiFont;
         private TextureAtlas _uiAtlas;
-        private string _currentInteraction = string.Empty; // Para saber que interacción está activa
+        private string _currentInteraction = string.Empty;
+
+        // --- MENUS ---
+        private PauseMenu _pauseMenu;
+        private InventoryMenu _inventoryMenu; // Nuevo Inventario
 
         public GameplayScreen(Game1 game)
             : base(game) { }
@@ -94,10 +97,9 @@ namespace Sequence_Break
             // Cargar el mapa
             _roomTexture = Content.Load<Texture2D>("textures/Specter_room");
 
-            // Empezar mirando al jugador
             _specterCurrent = _specterWalkFront;
 
-            // Posicion del mapa, para despues tener la posicion del jugador
+            // Posicion del mapa
             int scaledMapWidth = _roomTexture.Width * MAP_SCALE_FACTOR;
             int scaledMapHeight = _roomTexture.Height * MAP_SCALE_FACTOR;
 
@@ -126,15 +128,17 @@ namespace Sequence_Break
             }
             catch (Exception ex)
             {
-                Console.WriteLine(
-                    $"Error cargando assets de UI para InteractionPanel: {ex.Message}"
-                );
+                Console.WriteLine($"Error cargando assets de UI: {ex.Message}");
                 throw;
             }
 
             // Inicializar Panel de Interaccion
             _interactionPanel = new InteractionPanel(_uiFont, _uiAtlas, GraphicsDevice);
-            _interactionPanel.OnOptionSelected += HandleInteractionChoice; // seleccionar evento
+            _interactionPanel.OnOptionSelected += HandleInteractionChoice;
+
+            // Inicializar Menus
+            _pauseMenu = new PauseMenu(_game, this, _uiFont, GraphicsDevice);
+            _inventoryMenu = new InventoryMenu(_game, _uiFont, GraphicsDevice);
 
             _previousKeyboardState = Keyboard.GetState();
         }
@@ -145,56 +149,41 @@ namespace Sequence_Break
             int mapX = (int)_mapPosition.X;
             int mapY = (int)_mapPosition.Y;
 
-            // Bordes habitacion
+            // Bordes y Muros
+            _collisionBarriers.Add(new Rectangle(mapX, mapY, 128 * scale, 4 * scale)); // Arriba
             _collisionBarriers.Add(
-                new Rectangle(mapX + (0 * scale), mapY + (0 * scale), 128 * scale, 4 * scale)
-            );
-            // Muro inferior
+                new Rectangle(mapX, mapY + (125 * scale), 128 * scale, 3 * scale)
+            ); // Abajo
+            _collisionBarriers.Add(new Rectangle(mapX, mapY, 4 * scale, 128 * scale)); // Izquierda
             _collisionBarriers.Add(
-                new Rectangle(mapX + (0 * scale), mapY + (125 * scale), 128 * scale, 3 * scale)
-            );
-            // Muro izquierdo
-            _collisionBarriers.Add(
-                new Rectangle(mapX + (0 * scale), mapY + (0 * scale), 4 * scale, 128 * scale)
-            );
-            // Muro derecho
-            _collisionBarriers.Add(
-                new Rectangle(mapX + (125 * scale), mapY + (0 * scale), 3 * scale, 127 * scale)
-            );
+                new Rectangle(mapX + (125 * scale), mapY, 3 * scale, 127 * scale)
+            ); // Derecha
 
             // Objetos
-            //Cama
             _collisionBarriers.Add(
                 new Rectangle(mapX + (3 * scale), mapY + (78 * scale), 23 * scale, 47 * scale)
-            );
-            //Escritorio izquierda
+            ); // Cama
             _collisionBarriers.Add(
                 new Rectangle(mapX + (41 * scale), mapY + (4 * scale), 13 * scale, 35 * scale)
-            );
-            //Escritorio Centro
+            ); // Esc. Izq
             _collisionBarriers.Add(
                 new Rectangle(mapX + (55 * scale), mapY + (5 * scale), 22 * scale, 22 * scale)
-            );
-            //Escritorio Derecha
+            ); // Esc. Centro
             _collisionBarriers.Add(
                 new Rectangle(mapX + (77 * scale), mapY + (5 * scale), 13 * scale, 34 * scale)
-            );
-            //puff
+            ); // Esc. Der
             _collisionBarriers.Add(
                 new Rectangle(mapX + (98 * scale), mapY + (100 * scale), 27 * scale, 25 * scale)
-            );
-            // Medicinas y armas
+            ); // Puff
             _collisionBarriers.Add(
                 new Rectangle(mapX + (96 * scale), mapY + (5 * scale), 29 * scale, 28 * scale)
-            );
-            // Bateria
+            ); // Armas
             _collisionBarriers.Add(
                 new Rectangle(mapX + (3 * scale), mapY + (4 * scale), 35 * scale, 15 * scale)
-            );
-            // Televisor
+            ); // Bateria
             _collisionBarriers.Add(
                 new Rectangle(mapX + (91 * scale), mapY + (68 * scale), 32 * scale, 6 * scale)
-            );
+            ); // TV
         }
 
         private void PopulateInteractableObjects()
@@ -203,68 +192,77 @@ namespace Sequence_Break
             int mapX = (int)_mapPosition.X;
             int mapY = (int)_mapPosition.Y;
 
-            // Se pueden usar las mismas coordenadas de las hitboxs, o hacerlas un poco mas grandes
-            // Cama
-            Rectangle camaTrigger = new Rectangle(
-                mapX + (3 * scale),
-                mapY + (70 * scale),
-                30 * scale,
-                60 * scale
+            _interactableObjects.Add(
+                new InteractableObject
+                {
+                    Name = "Cama",
+                    TriggerZone = new Rectangle(
+                        mapX + (3 * scale),
+                        mapY + (70 * scale),
+                        30 * scale,
+                        60 * scale
+                    ),
+                }
             );
             _interactableObjects.Add(
-                new InteractableObject { Name = "Cama", TriggerZone = camaTrigger }
-            );
-
-            // Escritorio Centro
-            Rectangle escritorioTrigger = new Rectangle(
-                mapX + (55 * scale),
-                mapY + (5 * scale),
-                22 * scale,
-                30 * scale
-            );
-            _interactableObjects.Add(
-                new InteractableObject { Name = "Escritorio", TriggerZone = escritorioTrigger }
-            );
-
-            // Bateria
-            Rectangle bateriaTrigger = new Rectangle(
-                mapX + (3 * scale),
-                mapY + (4 * scale),
-                35 * scale,
-                20 * scale
+                new InteractableObject
+                {
+                    Name = "Escritorio",
+                    TriggerZone = new Rectangle(
+                        mapX + (55 * scale),
+                        mapY + (5 * scale),
+                        22 * scale,
+                        30 * scale
+                    ),
+                }
             );
             _interactableObjects.Add(
-                new InteractableObject { Name = "Bateria", TriggerZone = bateriaTrigger }
-            );
-            // Puff
-            Rectangle puffTrigger = new Rectangle(
-                mapX + (95 * scale),
-                mapY + (90 * scale),
-                40 * scale,
-                40 * scale
-            );
-            _interactableObjects.Add(
-                new InteractableObject { Name = "Puff", TriggerZone = puffTrigger }
-            );
-            // Medicinas y armas
-            Rectangle weaponsTrigger = new Rectangle(
-                mapX + (96 * scale),
-                mapY + (5 * scale),
-                32 * scale,
-                32 * scale
+                new InteractableObject
+                {
+                    Name = "Bateria",
+                    TriggerZone = new Rectangle(
+                        mapX + (3 * scale),
+                        mapY + (4 * scale),
+                        35 * scale,
+                        20 * scale
+                    ),
+                }
             );
             _interactableObjects.Add(
-                new InteractableObject { Name = "Armas_Medicinas", TriggerZone = weaponsTrigger }
-            );
-            // Televisor
-            Rectangle tvTrigger = new Rectangle(
-                mapX + (88 * scale),
-                mapY + (65 * scale),
-                39 * scale,
-                10 * scale
+                new InteractableObject
+                {
+                    Name = "Puff",
+                    TriggerZone = new Rectangle(
+                        mapX + (95 * scale),
+                        mapY + (90 * scale),
+                        40 * scale,
+                        40 * scale
+                    ),
+                }
             );
             _interactableObjects.Add(
-                new InteractableObject { Name = "Televisor", TriggerZone = tvTrigger }
+                new InteractableObject
+                {
+                    Name = "Armas_Medicinas",
+                    TriggerZone = new Rectangle(
+                        mapX + (96 * scale),
+                        mapY + (5 * scale),
+                        32 * scale,
+                        32 * scale
+                    ),
+                }
+            );
+            _interactableObjects.Add(
+                new InteractableObject
+                {
+                    Name = "Televisor",
+                    TriggerZone = new Rectangle(
+                        mapX + (88 * scale),
+                        mapY + (65 * scale),
+                        39 * scale,
+                        10 * scale
+                    ),
+                }
             );
         }
 
@@ -284,9 +282,7 @@ namespace Sequence_Break
             foreach (Rectangle barrier in _collisionBarriers)
             {
                 if (playerBox.Intersects(barrier))
-                {
                     return true;
-                }
             }
             return false;
         }
@@ -295,10 +291,26 @@ namespace Sequence_Break
         {
             KeyboardState currentKeyboardState = Keyboard.GetState();
 
-            if (currentKeyboardState.IsKeyDown(Keys.Escape))
-                _game.Exit(); // para hacer: pasarlo a un menu de pausa en vez de salir directamente
+            // 1. Actualizar Menú de Pausa (Prioridad Máxima)
+            _pauseMenu.Update(gameTime);
+            if (_pauseMenu.IsActive)
+                return; // Bloquea todo
 
-            // Pantalla completa
+            // 2. Pausar con Escape
+            if (
+                currentKeyboardState.IsKeyDown(Keys.Escape)
+                && !_previousKeyboardState.IsKeyDown(Keys.Escape)
+            )
+            {
+                // Si el inventario está abierto, Escape lo cierra (ya manejado dentro de InventoryMenu.Update)
+                // Si NO está abierto, abrimos pausa.
+                if (!_inventoryMenu.IsActive)
+                {
+                    _pauseMenu.Show();
+                }
+            }
+
+            // 3. Toggle Pantalla Completa
             if (
                 currentKeyboardState.IsKeyDown(Keys.F11)
                 && !_previousKeyboardState.IsKeyDown(Keys.F11)
@@ -308,16 +320,40 @@ namespace Sequence_Break
                 Core.Graphics.ApplyChanges();
             }
 
-            // Update
-            // Si el panel esta activo, se toma el control del input.
+            // 4. Actualizar Inventario (Prioridad 2)
+            if (
+                (
+                    currentKeyboardState.IsKeyDown(Keys.Tab)
+                    && !_previousKeyboardState.IsKeyDown(Keys.Tab)
+                )
+                || (
+                    currentKeyboardState.IsKeyDown(Keys.I)
+                    && !_previousKeyboardState.IsKeyDown(Keys.I)
+                )
+            )
+            {
+                // Solo abre si no hay diálogo activo
+                if (!_interactionPanel.IsActive)
+                {
+                    _inventoryMenu.Toggle();
+                }
+            }
+
+            if (_inventoryMenu.IsActive)
+            {
+                _inventoryMenu.Update(gameTime);
+                _previousKeyboardState = currentKeyboardState;
+                return; // Bloquea juego y diálogo
+            }
+
+            // 5. Actualizar Diálogos (Prioridad 3)
             if (_interactionPanel.IsActive)
             {
                 _interactionPanel.Update(gameTime);
             }
             else
-            // Si no, el jugador puede moverse e interactuar.
             {
-                // Movimiento
+                // 6. Lógica del Juego (Movimiento e Interacción)
                 _isMoving = false;
                 Vector2 movement = Vector2.Zero;
 
@@ -342,7 +378,7 @@ namespace Sequence_Break
                 )
                     movement.X = 1;
 
-                // Actualizar estado de animacion y 'isMoving'
+                // Animación
                 if (movement != Vector2.Zero)
                 {
                     _isMoving = true;
@@ -354,32 +390,25 @@ namespace Sequence_Break
                         _specterCurrent = _specterWalkBack;
                     else if (movement.Y > 0)
                         _specterCurrent = _specterWalkFront;
-                }
 
-                if (movement != Vector2.Zero)
                     movement.Normalize();
-
-                movement *= MOVEMENT_SPEED;
-
-                // Verificar colisiones
-                Vector2 newPosition = _specterPosition;
-                newPosition.X += movement.X;
-                Rectangle playerBoxX = GetPlayerBox(newPosition);
-                if (HasCollision(playerBoxX))
-                {
-                    newPosition.X = _specterPosition.X;
+                    movement *= MOVEMENT_SPEED;
                 }
+
+                // Colisiones
+                Vector2 newPosition = _specterPosition;
+
+                newPosition.X += movement.X;
+                if (HasCollision(GetPlayerBox(newPosition)))
+                    newPosition.X = _specterPosition.X;
 
                 newPosition.Y += movement.Y;
-                Rectangle playerBoxY = GetPlayerBox(newPosition);
-                if (HasCollision(playerBoxY))
-                {
+                if (HasCollision(GetPlayerBox(newPosition)))
                     newPosition.Y = _specterPosition.Y;
-                }
 
                 _specterPosition = newPosition;
 
-                // Logica interaccion
+                // Interacción (E)
                 if (
                     currentKeyboardState.IsKeyDown(Keys.E)
                     && !_previousKeyboardState.IsKeyDown(Keys.E)
@@ -387,16 +416,13 @@ namespace Sequence_Break
                 {
                     CheckForInteraction();
                 }
-                // Actualizar animacion
+
+                // Update Animación Sprite
                 if (_isMoving)
-                {
                     _specterCurrent.Update(gameTime);
-                }
                 else
-                {
                     _specterCurrent.CurrentFrame = 0;
-                }
-            } // Fin del 'else'
+            }
 
             _previousKeyboardState = currentKeyboardState;
         }
@@ -405,6 +431,7 @@ namespace Sequence_Break
         {
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
+            // Fondo
             SpriteBatch.Draw(
                 _roomTexture,
                 _mapPosition,
@@ -417,32 +444,34 @@ namespace Sequence_Break
                 0f
             );
 
+            // Jugador
             _specterCurrent.Draw(SpriteBatch, _specterPosition);
 
             SpriteBatch.End();
 
-            // DIBUJAR UI
-            // Dibujamos la UI en un lote separado para que este siempre encima.
+            // --- CAPA DE UI ---
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
+            // Diálogos
             _interactionPanel.Draw(gameTime, SpriteBatch);
+
+            // Inventario
+            _inventoryMenu.Draw(SpriteBatch);
+
+            // Pausa (Encima de todo)
+            _pauseMenu.Draw(SpriteBatch);
 
             SpriteBatch.End();
         }
 
         private void CheckForInteraction()
         {
-            // obtenemos la hitbox de Specter
             Rectangle playerBox = GetPlayerBox(_specterPosition);
-
             foreach (InteractableObject obj in _interactableObjects)
             {
-                // Si la hitbox de Specter intersecta con la de un objeto, se hace la interaccion
                 if (playerBox.Intersects(obj.TriggerZone))
                 {
                     PerformInteraction(obj.Name);
-
-                    // Rompemos el bucle para no interactuar con dos cosas a la vez
                     break;
                 }
             }
@@ -450,109 +479,90 @@ namespace Sequence_Break
 
         private void PerformInteraction(string objectName)
         {
-            // Guardamos el objeto actual por si necesitamos reaccionar a una opción
             _currentInteraction = objectName;
 
-            // Switch para saber que hacer con cada objeto.
             switch (objectName)
             {
                 case "Cama":
-                    // TO DO: Guardar partida aca (aparte de en el menu) y curar sanidad
                     var camaOptions = new List<string> { "Guardar y descansar", "Ahora no" };
                     _interactionPanel.Show(
                         "No es momento de dormir. Hay un caso que resolver... pero podria descansar un momento.",
                         camaOptions,
-                        null // Sin hablante
+                        "Pensamiento"
                     );
                     break;
 
                 case "Escritorio":
-                    // TO DO: Poner la interfaz de los casos disponibles
                     var escritorioOptions = new List<string> { "Investigar papeles", "Dejarlo" };
                     _interactionPanel.Show(
                         "Un monton de papeles... el rastro del Alquimista. Investigar?",
                         escritorioOptions,
-                        null // Sin hablante
+                        null
                     );
                     break;
 
                 case "Bateria":
                     _interactionPanel.Show(
                         "Una bateria de coche. Mantiene las luces encendidas.",
-                        null, // Sin opciones
-                        null // Sin hablante
-                    );
-                    break;
-                case "Puff":
-                    _interactionPanel.Show(
-                        "Comodo, pero esta cubierto de polvo.",
-                        null, // Sin opciones
-                        null // Sin hablante
+                        null,
+                        null
                     );
                     break;
 
-                case "Armas_Medicinas":
-                    // TO DO: Abrir inventario aca
-                    var armasOptions = new List<string> { "Revisar equipo", "Dejarlo" };
-                    string armasTexto =
-                        "Mis armas, que casualmente fueron cambiadas por obra de una horrenda censura... No tendria sentido que me lleve esto a mi aventura, pero simulemos como que sirven de algo.";
-                    _interactionPanel.Show(armasTexto, armasOptions, null);
+                case "Puff":
+                    _interactionPanel.Show("Comodo, pero esta cubierto de polvo.", null, null);
                     break;
+
+                case "Armas_Medicinas":
+                    var armasOptions = new List<string> { "Abrir inventario", "Dejarlo" };
+                    _interactionPanel.Show("Mis suministros y equipo.", armasOptions, null);
+                    break;
+
                 case "Televisor":
                     _interactionPanel.Show(
                         "Mi television, aunque apagada ahora mismo.",
-                        null, // Sin opciones
-                        null // Sin hablante
+                        null,
+                        null
                     );
                     break;
 
                 default:
-                    Console.WriteLine($"Interactuaste con un objeto sin lógica: {objectName}");
-                    _currentInteraction = string.Empty; // No hay lógica para esto
+                    _currentInteraction = string.Empty;
                     break;
             }
         }
 
-        /// Maneja la respuesta del jugador desde el InteractionPanel.
-        /// <param name="optionIndex">El índice de la opción seleccionada (0, 1, 2...)</param>
         private void HandleInteractionChoice(int optionIndex)
         {
-            // Usamos la variable _currentInteraction para saber a que responde el jugador
             switch (_currentInteraction)
             {
                 case "Cama":
-                    if (optionIndex == 0) // "Guardar y descansar"
+                    if (optionIndex == 0) // Guardar
                     {
-                        Console.WriteLine("Partida guardada y cordura recuperada (Lógica futura).");
-                        // logica de guardado y curacion
-                    }
-                    else // "Ahora no"
-                    {
-                        Console.WriteLine("El jugador decidió no descansar.");
+                        // Lógica de Guardado
+                        PlayerStatus.CurrentHP = PlayerStatus.MaxHP;
+                        PlayerStatus.CurrentSanity = PlayerStatus.MaxSanity;
+                        SaveManager.SaveGame();
+
+                        _interactionPanel.Show(
+                            "Progreso guardado y salud restaurada.",
+                            null,
+                            "Sistema"
+                        );
                     }
                     break;
 
                 case "Escritorio":
-                    if (optionIndex == 0) // "Investigar papeles"
-                    {
+                    if (optionIndex == 0)
                         _game.ChangeScreen(new CaseScreen(_game));
-                    }
-                    else // "Dejarlo"
-                    {
-                        Console.WriteLine("El jugador dejó los papeles.");
-                    }
                     break;
 
                 case "Armas_Medicinas":
-                    if (optionIndex == 0) // "Revisar equipo"
-                    {
-                        Console.WriteLine("Abriendo inventario (Lógica futura).");
-                        // inventario
-                    }
+                    if (optionIndex == 0)
+                        _inventoryMenu.Show();
                     break;
             }
 
-            // Limpiamos la interacción actual
             _currentInteraction = string.Empty;
         }
     }

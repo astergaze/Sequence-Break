@@ -40,8 +40,14 @@ namespace Sequence_Break
         // Diccionario para guardar los rectangulos de los sliders
         private Dictionary<string, Rectangle> _sliderBarRects = new Dictionary<string, Rectangle>();
 
-        public OptionsScreen(Game1 game)
-            : base(game) { }
+        // Pantalla a la que volver (null si venimos del MainMenu)
+        private Screen _screenToReturnTo;
+
+        public OptionsScreen(Game1 game, Screen screenToReturnTo = null)
+            : base(game)
+        {
+            _screenToReturnTo = screenToReturnTo;
+        }
 
         public override void LoadContent()
         {
@@ -53,17 +59,16 @@ namespace Sequence_Break
             _previousKeyboardState = Keyboard.GetState();
             _previousMouseState = Mouse.GetState();
 
-            // Layout Dinamico
+            // Layout
 
             // Medir todo el contenido primero
             string title = "[ CALIBRACION DE PERCEPCION ]";
-            // textos de ejemplo largos para calcular el ancho maximo
             string longMusica = "[ MUSICA: [||||||||||] - 100% ]";
-            string longPantalla = "[ PANTALLA: [VENTANA] ]"; // VENTANA es mas largo que COMPLETA
+            string longPantalla = "[ PANTALLA: [VENTANA] ]";
             string longVolver = "[ VOLVER ]";
 
             float titleWidth = _menuFont.MeasureString(title).X;
-            float optionsWidth = _menuFont.MeasureString(longMusica).X; // Musica/SFX son los mas largos
+            float optionsWidth = _menuFont.MeasureString(longMusica).X;
             float pantallaWidth = _menuFont.MeasureString(longPantalla).X;
             float volverWidth = _menuFont.MeasureString(longVolver).X;
 
@@ -73,7 +78,7 @@ namespace Sequence_Break
             );
 
             // Definir el panel basado en el contenido
-            int panelPadding = 100; // 50px a cada lado
+            int panelPadding = 100;
             int panelWidth = (int)contentWidth + panelPadding;
             int panelHeight = 600;
 
@@ -87,33 +92,32 @@ namespace Sequence_Break
             // Centrar el titulo
             _titlePosition = new Vector2(_panelRect.Center.X - (titleWidth / 2), _panelRect.Y + 60);
 
-            // Crear los rectangulos para las opciones (para mouse y alineacion)
+            // Crear los rectangulos para las opciones
             _optionRects.Clear();
             _sliderBarRects.Clear();
             float itemHeight = _menuFont.LineSpacing;
-            float yPos = _panelRect.Y + 200; // Posicion Y de la primera opcion
-            float xPosBase = _panelRect.Center.X - (contentWidth / 2); // X base para alinear a la izquierda
+            float yPos = _panelRect.Y + 200;
+            float xPosBase = _panelRect.Center.X - (contentWidth / 2);
 
             for (int i = 0; i < _options.Length; i++)
             {
-                float currentY = yPos + (i * (itemHeight + 30)); // 30px de espacio
+                float currentY = yPos + (i * (itemHeight + 30));
                 if (_options[i] == "VOLVER")
                 {
-                    currentY += 40; // Espacio extra
+                    currentY += 40;
                 }
 
                 _optionRects.Add(
                     new Rectangle((int)xPosBase, (int)currentY, (int)contentWidth, (int)itemHeight)
                 );
 
-                // Pre-calcular los rectangulos de los sliders
+                // Pre-calcular sliders
                 if (_options[i] == "MUSICA" || _options[i] == "SFX")
                 {
                     string prefix = (_options[i] == "MUSICA") ? "[ MUSICA: " : "[ SFX   : ";
                     float prefixWidth = _menuFont.MeasureString(prefix).X;
                     float barWidth = _menuFont.MeasureString("[||||||||||]").X;
 
-                    // Centrar el texto completo para encontrar el X inicial
                     string fullText =
                         (_options[i] == "MUSICA")
                             ? longMusica
@@ -139,7 +143,7 @@ namespace Sequence_Break
 
             if (!_isReadyForInput)
             {
-                // Espera a que el usuario suelte el click inicial
+                // Espera a que el jugador suelte el click inicial
                 if (
                     ms.LeftButton == ButtonState.Released
                     && _previousMouseState.LeftButton == ButtonState.Released
@@ -149,11 +153,11 @@ namespace Sequence_Break
                 }
                 _previousKeyboardState = kbs;
                 _previousMouseState = ms;
-                return; // No hacer nada mas
+                return;
             }
 
             // Control de Mouse (Hover)
-            if (!_isDraggingSlider) // No cambiar seleccion si estamos arrastrando
+            if (!_isDraggingSlider)
             {
                 _selectedOptionIndex = -1;
                 for (int i = 0; i < _optionRects.Count; i++)
@@ -180,11 +184,12 @@ namespace Sequence_Break
                     _selectedOptionIndex = 0;
             }
 
-            // Control de Teclado (Modificacion)
+            // Acciones de Teclado
             if (_selectedOptionIndex != -1)
             {
                 string selected = _options[_selectedOptionIndex];
 
+                // Izquierda/Derecha (Sliders)
                 if (kbs.IsKeyDown(Keys.Left) && !_previousKeyboardState.IsKeyDown(Keys.Left))
                 {
                     if (selected == "MUSICA")
@@ -203,16 +208,17 @@ namespace Sequence_Break
                     if (selected == "PANTALLA")
                         ToggleFullscreen();
                 }
+
                 if (kbs.IsKeyDown(Keys.Enter) && !_previousKeyboardState.IsKeyDown(Keys.Enter))
                 {
                     if (selected == "PANTALLA")
                         ToggleFullscreen();
                     if (selected == "VOLVER")
-                        _game.ChangeScreen(new MainMenuScreen(_game));
+                        GoBack();
                 }
             }
 
-            // Control de Mouse (Slider/Drag)
+            // Control de Mouse
             if (ms.LeftButton == ButtonState.Pressed)
             {
                 if (
@@ -220,18 +226,16 @@ namespace Sequence_Break
                     && _selectedOptionIndex != -1
                 )
                 {
-                    // Click inicial
                     string selected = _options[_selectedOptionIndex];
                     if (selected == "MUSICA" || selected == "SFX")
                     {
                         _isDraggingSlider = true;
-                        HandleSliderDrag(mousePoint); // Aplicar el primer click
+                        HandleSliderDrag(mousePoint);
                     }
                 }
 
                 if (_isDraggingSlider)
                 {
-                    // Arrastrar
                     HandleSliderDrag(mousePoint);
                 }
             }
@@ -239,49 +243,61 @@ namespace Sequence_Break
             {
                 if (_isDraggingSlider)
                 {
-                    // Soltar
                     _isDraggingSlider = false;
-                    SettingsManager.SaveSettings(); // Guardar al soltar
+                    SettingsManager.SaveSettings();
                 }
                 else if (
                     _previousMouseState.LeftButton == ButtonState.Pressed
                     && _selectedOptionIndex != -1
                 )
                 {
-                    // Click simple (sin arrastrar)
                     string selected = _options[_selectedOptionIndex];
                     if (selected == "PANTALLA")
                         ToggleFullscreen();
                     if (selected == "VOLVER")
-                        _game.ChangeScreen(new MainMenuScreen(_game));
+                        GoBack();
                 }
             }
 
             if (kbs.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape))
             {
-                _game.ChangeScreen(new MainMenuScreen(_game));
+                GoBack();
             }
 
             _previousKeyboardState = kbs;
             _previousMouseState = ms;
         }
 
+        // Retorno
+        private void GoBack()
+        {
+            if (_screenToReturnTo != null)
+            {
+                // 'false' indica que no llame a LoadContent(),
+                // preservando el estado de la pantalla de juego
+                _game.ChangeScreen(_screenToReturnTo, false);
+            }
+            else
+            {
+                // Si no hay pantalla anterior, vamos al Menu Principal
+                _game.ChangeScreen(new MainMenuScreen(_game));
+            }
+        }
+
         // Logica de Slider
         private void HandleSliderDrag(Point mousePoint)
         {
             if (_selectedOptionIndex < 0 || _selectedOptionIndex > 1)
-                return; // Solo para MUSICA/SFX
+                return;
 
-            string selectedOption = _options[_selectedOptionIndex]; // "MUSICA" o "SFX"
+            string selectedOption = _options[_selectedOptionIndex];
             Rectangle sliderBarRect = _sliderBarRects[selectedOption];
 
-            // Calcular el porcentaje basado en el click RELATIVO al sliderRect
             float relativeX = Math.Clamp(mousePoint.X - sliderBarRect.X, 0, sliderBarRect.Width);
             float percentage = relativeX / (float)sliderBarRect.Width;
             int newValue = (int)Math.Round(percentage * 10);
             newValue = Math.Clamp(newValue, 0, 10);
 
-            // Aplicar el valor
             if (selectedOption == "MUSICA")
             {
                 if (SettingsManager.Data.MusicVolume != newValue)
@@ -300,7 +316,6 @@ namespace Sequence_Break
             }
         }
 
-        // Helpers para modificar valores y guardar
         private void UpdateMusicVolume(int direction)
         {
             SettingsManager.Data.MusicVolume = Math.Clamp(
@@ -334,10 +349,10 @@ namespace Sequence_Break
         {
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-            // Dibujar el fondo del panel
+            // Fondo
             SpriteBatch.Draw(_pixel, _panelRect, _panelColor);
 
-            // Dibujar Titulo
+            // Titulo
             SpriteBatch.DrawString(
                 _menuFont,
                 "[ CALIBRACION DE PERCEPCION ]",
@@ -345,13 +360,12 @@ namespace Sequence_Break
                 _titleColor
             );
 
-            // Dibujar Opciones
+            // Opciones
             for (int i = 0; i < _options.Length; i++)
             {
                 Color color = (i == _selectedOptionIndex) ? _selectedColor : _normalColor;
                 string text = "";
 
-                // Texto dinamico
                 switch (_options[i])
                 {
                     case "MUSICA":
@@ -363,7 +377,6 @@ namespace Sequence_Break
                         text = $"[ SFX   : {sfxBar} - {SettingsManager.Data.SfxVolume * 10}% ]";
                         break;
                     case "PANTALLA":
-                        // CORRECCION: Leer desde el SettingsManager
                         string screenMode = SettingsManager.Data.IsFullscreen
                             ? "COMPLETA"
                             : "VENTANA";
@@ -374,7 +387,6 @@ namespace Sequence_Break
                         break;
                 }
 
-                // Centrar el texto en su rectangulo asignado
                 Rectangle rect = _optionRects[i];
                 Vector2 textSize = _menuFont.MeasureString(text);
                 Vector2 pos = new Vector2(rect.X + (rect.Width / 2f) - (textSize.X / 2f), rect.Y);
@@ -388,7 +400,7 @@ namespace Sequence_Break
         private string GenerateBar(int value)
         {
             StringBuilder sb = new StringBuilder("[");
-            value = Math.Max(0, Math.Min(10, value)); // Clamp 0-10
+            value = Math.Max(0, Math.Min(10, value));
             sb.Append('|', value);
             sb.Append('-', 10 - value);
             sb.Append("]");
