@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj": {}
+    "C:\\Users\\uli\\Desktop\\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\\MonoGameLibrary\\MonoGameLibrary.csproj": {}
   },
   "projects": {
-    "C:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj": {
+    "C:\\Users\\uli\\Desktop\\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\\MonoGameLibrary\\MonoGameLibrary.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj",
+        "projectUniqueName": "C:\\Users\\uli\\Desktop\\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\\MonoGameLibrary\\MonoGameLibrary.csproj",
         "projectName": "MonoGameLibrary",
-        "projectPath": "C:\\code\\Sequence-Break\\MonoGameLibrary\\MonoGameLibrary.csproj",
-        "packagesPath": "C:\\Users\\frisk\\.nuget\\packages\\",
-        "outputPath": "C:\\code\\Sequence-Break\\MonoGameLibrary\\obj\\",
+        "projectPath": "C:\\Users\\uli\\Desktop\\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\\MonoGameLibrary\\MonoGameLibrary.csproj",
+        "packagesPath": "C:\\Users\\uli\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\uli\\Desktop\\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\\MonoGameLibrary\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\frisk\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\uli\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,7 +44,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
         "net9.0": {
@@ -67,31 +67,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[9.0.7, 9.0.7]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[9.0.7, 9.0.7]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[9.0.7, 9.0.7]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "win-x64": {
-          "#import": []
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

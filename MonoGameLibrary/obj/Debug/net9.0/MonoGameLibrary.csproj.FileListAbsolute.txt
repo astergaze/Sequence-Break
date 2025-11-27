@@ -11,3 +11,16 @@ c:\code\Sequence-Break\MonoGameLibrary\obj\Debug\net9.0\MonoGameLibrary.dll
 c:\code\Sequence-Break\MonoGameLibrary\obj\Debug\net9.0\refint\MonoGameLibrary.dll
 c:\code\Sequence-Break\MonoGameLibrary\obj\Debug\net9.0\MonoGameLibrary.pdb
 c:\code\Sequence-Break\MonoGameLibrary\obj\Debug\net9.0\ref\MonoGameLibrary.dll
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\bin\Debug\net9.0\MonoGameLibrary.deps.json
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\bin\Debug\net9.0\MonoGameLibrary.dll
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\bin\Debug\net9.0\MonoGameLibrary.pdb
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\obj\Debug\net9.0\MonoGameLibrary.csproj.AssemblyReference.cache
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\obj\Debug\net9.0\MonoGameLibrary.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\obj\Debug\net9.0\MonoGameLibrary.AssemblyInfoInputs.cache
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\obj\Debug\net9.0\MonoGameLibrary.AssemblyInfo.cs
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\obj\Debug\net9.0\MonoGameLibrary.csproj.CoreCompileInputs.cache
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\obj\Debug\net9.0\MonoGameLibrary.sourcelink.json
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\obj\Debug\net9.0\MonoGameLibrary.dll
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\obj\Debug\net9.0\refint\MonoGameLibrary.dll
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\obj\Debug\net9.0\MonoGameLibrary.pdb
+C:\Users\uli\Desktop\TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo\MonoGameLibrary\obj\Debug\net9.0\ref\MonoGameLibrary.dll

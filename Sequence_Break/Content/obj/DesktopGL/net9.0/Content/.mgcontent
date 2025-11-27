@@ -4,35 +4,37 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/battle.mp3</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/effects/sfx_ability.wav</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/effects/sfx_got_hit.wav</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/effects/sfx_menu_select.wav</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/effects/sfx_menu_wave.wav</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/effects/sfx_revolver_shoot.wav</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/lobby.mp3</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/mapSong.mp3</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/MaybeMain.mp3</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/fonts/BebasNeue.spritefont</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/fonts/IBMPlexMono.spritefont</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/Interface/Combat/battle_background.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/Interface/Combat/InterfaceSpriteSheet.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/maps/demo/textures/QuirurgicoTileset.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/maps/demo/textures/RecepcionTileset.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/combat/hit-spritesheet.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/enemies/demo/enemy-1.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/enemies/demo/enemy-2.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/enemies/demo/enemy-f-l.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/enemies/demo/enemy-walking-backward.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/enemies/demo/enemy-walking-forward.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_back.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_front.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_left.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_right.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_room.png</File>
-    <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_shoot.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/audio/battle.mp3</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/audio/effects/sfx_ability.wav</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/audio/effects/sfx_got_hit.wav</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/audio/effects/sfx_menu_select.wav</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/audio/effects/sfx_menu_wave.wav</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/audio/effects/sfx_revolver_shoot.wav</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/audio/lobby.mp3</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/audio/mapSong.mp3</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/audio/MaybeMain.mp3</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/fonts/BebasNeue.spritefont</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/fonts/IBMPlexMono.spritefont</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/Interface/Combat/battle_background.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/Interface/Combat/InterfaceSpriteSheet.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/maps/demo/textures/QuirurgicoTileset.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/maps/demo/textures/RecepcionTileset.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/combat/hit-spritesheet.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/enemies/demo/enemy-1.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/enemies/demo/enemy-2.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/enemies/demo/enemy-f-l.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/enemies/demo/enemy-walking-backward.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/enemies/demo/enemy-walking-forward.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/enemies/demo/enemy-walking-right.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/Specter_back.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/Specter_front.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/Specter_left.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/Specter_right.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/Specter_room.png</File>
+    <File>C:/Users/uli/Desktop/TP2_Juego_2D_Sequence-Break_Thiago_Martinez_y_Ulises_Alvelo/Sequence_Break/Content/textures/Specter_shoot.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
