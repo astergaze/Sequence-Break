@@ -13,6 +13,18 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin audio/battle.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/battle.mp3
+
+#begin audio/lobby.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/lobby.mp3
+
 #begin audio/mapSong.mp3
 /importer:Mp3Importer
 /processor:SongProcessor

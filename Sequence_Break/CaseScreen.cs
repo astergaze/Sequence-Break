@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media; // NECESARIO PARA LA MUSICA
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using TiledSharp;
@@ -45,6 +46,9 @@ namespace Sequence_Break
         private TextureAtlas _enemyAtlasSide;
 
         // -------------------------------------
+
+        // --- MUSICA (NUEVO) ---
+        private Song _backgroundMusic;
 
         // Variables de Control
         private const float MOVEMENT_SPEED = 5.0f;
@@ -172,6 +176,19 @@ namespace Sequence_Break
 
             _pixelTexture = new Texture2D(GraphicsDevice, 1, 1);
             _pixelTexture.SetData(new[] { Color.White });
+
+            // --- CARGAR MUSICA ---
+            try
+            {
+                // CAMBIA "audio/CaseTheme" POR EL NOMBRE DE TU ARCHIVO DE MUSICA
+                _backgroundMusic = Content.Load<Song>("audio/mapSong");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al cargar la musica: {ex.Message}");
+                _backgroundMusic = null;
+            }
+            // ---------------------
 
             try
             {
@@ -460,12 +477,20 @@ namespace Sequence_Break
                     break;
 
                 case "ExperimentationTools":
-                    _interactionPanel.Show(
-                        "Elixires y herramientas para experimentacion... Sera mejor no tocar eso.",
-                        null,
-                        "Luka Specter"
-                    );
-
+                    if (!alreadyInteracted)
+                    {
+                        PlayerStatus.AddItem(
+                            "Elixir Experimental",
+                            "Aumenta percepcion.",
+                            1,
+                            0,
+                            "PowerUp"
+                        );
+                        _interactionPanel.Show("Recogiste herramientas extranas.", null, "Sistema");
+                        PlayerStatus.RegisterInteraction(interactable.Name);
+                    }
+                    else
+                        _interactionPanel.Show("Ya tomaste las muestras.", null, null);
                     break;
 
                 default:
@@ -482,6 +507,15 @@ namespace Sequence_Break
 
         public override void Update(GameTime gameTime)
         {
+            // --- LOGICA DE MUSICA (NUEVO) ---
+            if (_backgroundMusic != null && MediaPlayer.Queue.ActiveSong != _backgroundMusic)
+            {
+                MediaPlayer.Play(_backgroundMusic);
+                MediaPlayer.IsRepeating = true;
+                SettingsManager.ApplyMusicVolume();
+            }
+            // -------------------------------
+
             _pauseMenu.Update(gameTime);
             if (_pauseMenu.IsActive)
                 return;
@@ -589,11 +623,10 @@ namespace Sequence_Break
                         _specterCurrent = _specterWalkBack;
                     else if (movement.Y > 0)
                         _specterCurrent = _specterWalkFront;
-                }
 
-                if (movement != Vector2.Zero)
                     movement.Normalize();
-                movement *= MOVEMENT_SPEED;
+                    movement *= MOVEMENT_SPEED;
+                }
 
                 Vector2 newPosition = _specterPosition;
                 newPosition.X += movement.X;

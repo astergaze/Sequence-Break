@@ -4,6 +4,9 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
+    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/battle.mp3</File>
+    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/lobby.mp3</File>
+    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/mapSong.mp3</File>
     <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/MaybeMain.mp3</File>
     <File>C:/code/Sequence-Break/Sequence_Break/Content/fonts/BebasNeue.spritefont</File>
     <File>C:/code/Sequence-Break/Sequence_Break/Content/fonts/IBMPlexMono.spritefont</File>
@@ -25,6 +28,9 @@
     <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_shoot.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

@@ -87,3 +87,9 @@ C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\enemies\
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\enemies\demo\enemy-f-l.xnb
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\enemies\demo\enemy-walking-backward.xnb
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\textures\enemies\demo\enemy-walking-forward.xnb
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\battle.ogg
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\battle.xnb
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\lobby.ogg
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\lobby.xnb
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\mapSong.ogg
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\mapSong.xnb

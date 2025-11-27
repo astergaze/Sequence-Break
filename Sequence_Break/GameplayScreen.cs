@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media; // Necesario para Song y MediaPlayer
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 
@@ -58,7 +59,10 @@ namespace Sequence_Break
 
         // --- MENUS ---
         private PauseMenu _pauseMenu;
-        private InventoryMenu _inventoryMenu; // Nuevo Inventario
+        private InventoryMenu _inventoryMenu;
+
+        // --- MUSICA (NUEVO) ---
+        private Song _backgroundMusic;
 
         public GameplayScreen(Game1 game)
             : base(game) { }
@@ -131,6 +135,19 @@ namespace Sequence_Break
                 Console.WriteLine($"Error cargando assets de UI: {ex.Message}");
                 throw;
             }
+
+            // --- CARGAR MUSICA ---
+            try
+            {
+                // CAMBIA "audio/SpecterRoom" POR EL NOMBRE DE TU ARCHIVO DE MUSICA PARA ESTA SALA
+                _backgroundMusic = Content.Load<Song>("audio/lobby");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al cargar la musica del Gameplay: {ex.Message}");
+                _backgroundMusic = null;
+            }
+            // ---------------------
 
             // Inicializar Panel de Interaccion
             _interactionPanel = new InteractionPanel(_uiFont, _uiAtlas, GraphicsDevice);
@@ -289,6 +306,15 @@ namespace Sequence_Break
 
         public override void Update(GameTime gameTime)
         {
+            // --- LOGICA DE MUSICA ---
+            if (_backgroundMusic != null && MediaPlayer.Queue.ActiveSong != _backgroundMusic)
+            {
+                MediaPlayer.Play(_backgroundMusic);
+                MediaPlayer.IsRepeating = true;
+                SettingsManager.ApplyMusicVolume();
+            }
+            // ------------------------
+
             KeyboardState currentKeyboardState = Keyboard.GetState();
 
             // 1. Actualizar Menú de Pausa (Prioridad Máxima)

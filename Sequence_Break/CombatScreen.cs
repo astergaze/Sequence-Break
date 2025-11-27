@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media; // NECESARIO PARA LA MUSICA
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 
@@ -69,6 +70,9 @@ namespace Sequence_Break
         private Vector2 _hitTargetPosition;
         private const float HIT_SCALE = 3.0f;
         private const int HIT_BASE_SIZE = 64;
+
+        // --- MUSICA (NUEVO) ---
+        private Song _combatMusic;
 
         // --- COMBATE ---
         private bool _isPlayerAttacking = false;
@@ -200,16 +204,18 @@ namespace Sequence_Break
                 throw;
             }
 
-            // --- CONFIGURACION DINAMICA DEL ENEMIGO ---
+            // --- CONFIGURACION DINAMICA DEL ENEMIGO Y MUSICA ---
             string atlasPath;
             string enemyName;
             int hp;
+            string musicPath; // Variable para la musica
 
             if (_enemyType == "Boss")
             {
                 atlasPath = "textures/enemies/demo/enemy-2-atlas-definition.xml";
                 enemyName = "Sujeto de Prueba 02";
                 hp = 200;
+                musicPath = "audio/battle"; // CAMBIA ESTO POR TU ARCHIVO DE MUSICA DE JEFE
             }
             else
             {
@@ -217,7 +223,20 @@ namespace Sequence_Break
                 atlasPath = "textures/enemies/demo/enemy-1-texture-atlas.xml";
                 enemyName = "Disonancia";
                 hp = 80;
+                musicPath = "audio/battle"; // CAMBIA ESTO POR TU ARCHIVO DE MUSICA DE PELEA
             }
+
+            // --- CARGAR MUSICA ---
+            try
+            {
+                _combatMusic = Content.Load<Song>(musicPath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error cargando musica de combate: {ex.Message}");
+                _combatMusic = null;
+            }
+            // ---------------------
 
             _enemyAtlas = TextureAtlas.FromFile(Content, atlasPath);
             AnimatedSprite enemyAnimatedSprite = _enemyAtlas.CreateAnimatedSprite("enemy-attack");
@@ -371,6 +390,15 @@ namespace Sequence_Break
 
         public override void Update(GameTime gameTime)
         {
+            // --- LOGICA DE MUSICA ---
+            if (_combatMusic != null && MediaPlayer.Queue.ActiveSong != _combatMusic)
+            {
+                MediaPlayer.Play(_combatMusic);
+                MediaPlayer.IsRepeating = true;
+                SettingsManager.ApplyMusicVolume();
+            }
+            // ------------------------
+
             KeyboardState currentKeyboardState = Keyboard.GetState();
 
             _enemy.AnimatedSprite.Update(gameTime);
