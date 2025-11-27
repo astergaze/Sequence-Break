@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+  <Texture>textures/Specter_back</Texture>
+  <Regions>
+    <Region name="luka-back-1" x="0" y="0" width="22" height="40" />
+    <Region name="luka-back-2" x="22" y="1" width="22" height="38" />
+    <Region name="luka-back-3" x="44" y="0" width="22" height="40" />
+    <Region name="luka-back-4" x="66" y="1" width="22" height="38" />
+    <Region name="luka-back-5" x="88" y="0" width="22" height="40" />
+  </Regions>
+  <Animations>
+    <Animation name="luka-walk-back" delay="150">
+      <Frame region="luka-back-1" />
+      <Frame region="luka-back-2" />
+      <Frame region="luka-back-3" />
+      <Frame region="luka-back-4" />
+      <Frame region="luka-back-5" />
+    </Animation>
+  </Animations>
+</TextureAtlas>

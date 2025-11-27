@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+  <Texture>textures/enemies/demo/enemy-walking-backward</Texture>
+  <Regions>
+    <Region name="enemy-walk-1" x="0" y="0" width="16" height="41" />
+    <Region name="enemy-walk-2" x="16" y="0" width="16" height="41" />
+    <Region name="enemy-walk-3" x="32" y="0" width="16" height="41" />
+  </Regions>
+  <Animations>
+    <Animation name="enemy-walk-bw" delay="150">
+      <Frame region="enemy-walk-1" />
+      <Frame region="enemy-walk-2" />
+      <Frame region="enemy-walk-3" />
+      <Frame region="enemy-walk-1" />
+    </Animation>
+  </Animations>
+</TextureAtlas>

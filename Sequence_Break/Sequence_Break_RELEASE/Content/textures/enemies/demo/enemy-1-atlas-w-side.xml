@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+  <Texture>textures/enemies/demo/enemy-f-l</Texture>
+  <Regions>
+    <Region name="enemy-walk-1" x="17" y="0" width="20" height="41" />
+  </Regions>
+  <Animations>
+    <Animation name="enemy-walk-side" delay="150">
+      <Frame region="enemy-walk-1" />
+    </Animation>
+  </Animations>
+</TextureAtlas>

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "XbUwUHdBx8M=",
+  "dgSpecHash": "IKc71anBDB8=",
   "success": true,
   "projectFilePath": "C:\\code\\Sequence-Break\\Sequence_Break\\Sequence_Break.csproj",
   "expectedPackageFiles": [
@@ -22,7 +22,10 @@
     "C:\\Users\\frisk\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512",
     "C:\\Users\\frisk\\.nuget\\packages\\system.valuetuple\\4.5.0\\system.valuetuple.4.5.0.nupkg.sha512",
     "C:\\Users\\frisk\\.nuget\\packages\\tiledsharp\\1.0.1\\tiledsharp.1.0.1.nupkg.sha512",
-    "C:\\Users\\frisk\\.nuget\\packages\\xnassets.monogame\\0.7.5\\xnassets.monogame.0.7.5.nupkg.sha512"
+    "C:\\Users\\frisk\\.nuget\\packages\\xnassets.monogame\\0.7.5\\xnassets.monogame.0.7.5.nupkg.sha512",
+    "C:\\Users\\frisk\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\9.0.7\\microsoft.netcore.app.runtime.win-x64.9.0.7.nupkg.sha512",
+    "C:\\Users\\frisk\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\9.0.7\\microsoft.windowsdesktop.app.runtime.win-x64.9.0.7.nupkg.sha512",
+    "C:\\Users\\frisk\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\9.0.7\\microsoft.aspnetcore.app.runtime.win-x64.9.0.7.nupkg.sha512"
   ],
   "logs": []
 }
