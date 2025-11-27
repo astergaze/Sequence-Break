@@ -96,6 +96,10 @@ namespace Sequence_Break
                     return PlayerStatus.Inventory;
                 if (_tabs[_selectedTabIndex] == "Objetos clave")
                     return PlayerStatus.KeyItems;
+                // Para Equipamiento retornamos una lista temporal con el arma actual para visualizarla
+                if (_tabs[_selectedTabIndex] == "Equipamiento")
+                    return new List<ItemData> { PlayerStatus.CurrentWeapon };
+
                 return null;
             }
         }
@@ -116,8 +120,6 @@ namespace Sequence_Break
         {
             get
             {
-                if (_tabs[_selectedTabIndex] == "Equipamiento")
-                    return PlayerStatus.CurrentWeapon;
                 var list = CurrentList;
                 if (list != null && list.Count > 0 && _selectedItemIndex < list.Count)
                     return list[_selectedItemIndex];
@@ -210,11 +212,8 @@ namespace Sequence_Break
 
             if (kbs.IsKeyDown(Keys.E) && !_prevKbState.IsKeyDown(Keys.E))
             {
-                bool canEnter = true;
-                if (CurrentList != null && CurrentList.Count == 0)
-                    canEnter = false;
-
-                if (canEnter)
+                // Permitir entrar solo si hay items en la lista
+                if (CurrentList != null && CurrentList.Count > 0)
                 {
                     _currentState = InventoryState.ItemList;
                     _selectedItemIndex = 0;
@@ -230,7 +229,13 @@ namespace Sequence_Break
         private void UpdateItemList(KeyboardState kbs)
         {
             var list = CurrentList;
-            int count = (list != null) ? list.Count : 1;
+            int count = (list != null) ? list.Count : 0;
+
+            if (count == 0)
+            {
+                _currentState = InventoryState.Sidebar; // Volver si se vació la lista
+                return;
+            }
 
             if (kbs.IsKeyDown(Keys.W) && !_prevKbState.IsKeyDown(Keys.W))
             {
@@ -291,24 +296,68 @@ namespace Sequence_Break
 
         private void ExecuteAction(string action)
         {
+            // 1. INSPECCIONAR (Solo UI)
             if (action == "Inspeccionar")
             {
                 _showDescription = !_showDescription;
                 _scrollPosition = 0;
+                return;
             }
-            else if (action == "Usar")
+
+            // 2. ACCIONES QUE AFECTAN AL PLAYER STATUS
+            string feedbackMessage = "";
+
+            if (_tabs[_selectedTabIndex] == "Objetos") // Items consumibles
             {
-                // EJEMPLO: Usar item desde PlayerStatus
-                if (SelectedItemData.Name == "Pastillas de cordura")
+                if (action == "Usar")
                 {
-                    PlayerStatus.ModifySanity(20);
-                    Console.WriteLine("Cordura restaurada!");
-                    // TO DO: Logica para eliminar y manejar cantidad de items
+                    feedbackMessage = PlayerStatus.UseItem(_selectedItemIndex);
+
+                    // Ajustar índice si el objeto desapareció
+                    if (CurrentList.Count > 0 && _selectedItemIndex >= CurrentList.Count)
+                        _selectedItemIndex = Math.Max(0, CurrentList.Count - 1);
+                }
+                else if (action == "Tirar")
+                {
+                    feedbackMessage = PlayerStatus.DropItem(_selectedItemIndex);
+
+                    if (CurrentList.Count > 0 && _selectedItemIndex >= CurrentList.Count)
+                        _selectedItemIndex = Math.Max(0, CurrentList.Count - 1);
                 }
             }
-            else
+            else if (_tabs[_selectedTabIndex] == "Equipamiento")
             {
-                Console.WriteLine($"Accion: {action} -> {SelectedItemData.Name}");
+                if (action == "Cambiar")
+                {
+                    feedbackMessage = "Aun no puedes cambiar de arma.";
+                }
+                else if (action == "Tirar")
+                {
+                    feedbackMessage = "No puedes tirar tu arma equipada.";
+                }
+            }
+            else if (_tabs[_selectedTabIndex] == "Objetos clave")
+            {
+                // Objetos clave usualmente no se tiran ni se usan desde el menu
+                feedbackMessage = "Este objeto no se puede usar aqui.";
+            }
+
+            // 3. MOSTRAR RESULTADO EN CONSOLA
+            if (!string.IsNullOrEmpty(feedbackMessage))
+            {
+                Console.WriteLine(feedbackMessage);
+            }
+
+            // Si la lista quedó vacía, volver al panel lateral
+            if (CurrentList == null || CurrentList.Count == 0)
+            {
+                _currentState = InventoryState.Sidebar;
+                _showDescription = false;
+            }
+            // Si se realizó una acción que cierra el menú de acciones (Usar/Tirar), volver a lista
+            else if (action != "Inspeccionar")
+            {
+                _currentState = InventoryState.ItemList;
             }
         }
 
@@ -335,10 +384,9 @@ namespace Sequence_Break
             Rectangle sidebarRect = new Rectangle(0, 0, _sidebarWidth, _graphics.Viewport.Height);
             spriteBatch.Draw(_pixel, sidebarRect, _sidebarColor);
 
-            // STATS DESDE PLAYERSTATUS
+            // STATS
             Vector2 statsPos = new Vector2(20, 40);
             DrawScaledString(spriteBatch, "HP:", statsPos, _textColorHeader);
-            // Leemos HP actual y Maximo
             DrawScaledString(
                 spriteBatch,
                 $"{PlayerStatus.CurrentHP}/{PlayerStatus.MaxHP}",
@@ -348,7 +396,6 @@ namespace Sequence_Break
 
             statsPos.Y += 60;
             DrawScaledString(spriteBatch, "Cordura:", statsPos, _textColorValue);
-            // Leemos Cordura actual y Maxima
             DrawScaledString(
                 spriteBatch,
                 $"{PlayerStatus.CurrentSanity}/{PlayerStatus.MaxSanity}",
@@ -372,9 +419,7 @@ namespace Sequence_Break
 
                 Color btnColor = isSelected ? _buttonSelectedColor : _buttonNormalColor;
                 if (_currentState != InventoryState.Sidebar && isSelected)
-                {
                     btnColor = Color.Lerp(btnColor, Color.Black, 0.3f);
-                }
 
                 spriteBatch.Draw(_pixel, btnRect, btnColor);
 
@@ -392,14 +437,10 @@ namespace Sequence_Break
                     btnRect.Center.Y - (textSize.Y / 2)
                 );
 
-                Color txtColor = Color.White;
-                if (isSelected && _currentState == InventoryState.Sidebar)
-                    txtColor = Color.White;
-                else if (isSelected)
-                    txtColor = Color.LightGray;
-                else
-                    txtColor = Color.Gray;
-
+                Color txtColor =
+                    (isSelected && _currentState == InventoryState.Sidebar)
+                        ? Color.White
+                        : (isSelected ? Color.LightGray : Color.Gray);
                 DrawScaledString(spriteBatch, text, textPos, txtColor);
             }
         }
@@ -431,9 +472,7 @@ namespace Sequence_Break
             }
 
             if (_showDescription)
-            {
                 DrawDescriptionPanel(spriteBatch);
-            }
         }
 
         private void DrawSingleItem(
@@ -457,9 +496,7 @@ namespace Sequence_Break
             DrawScaledString(spriteBatch, ammoText, ammoPos, _highlightColor);
 
             if (hasFocus)
-            {
                 DrawActionsBelow(spriteBatch, pos, actions);
-            }
         }
 
         private void DrawItemList(
@@ -469,7 +506,7 @@ namespace Sequence_Break
             string[] actions
         )
         {
-            if (list.Count == 0)
+            if (list == null || list.Count == 0)
             {
                 DrawScaledString(spriteBatch, "Vacio...", pos, Color.Gray);
                 return;
@@ -490,7 +527,12 @@ namespace Sequence_Break
                 if (!sectionFocus)
                     nameColor = _dimColor;
 
-                DrawScaledString(spriteBatch, list[i].Name, pos, nameColor);
+                // Mostrar cantidad si es stackable
+                string displayName = list[i].Name;
+                if (list[i].MaxAmmo > 1)
+                    displayName += $" x{list[i].CurrentAmmo}";
+
+                DrawScaledString(spriteBatch, displayName, pos, nameColor);
 
                 if (isSelected && sectionFocus)
                 {
@@ -516,25 +558,20 @@ namespace Sequence_Break
                     Color actionColor = isActionSelected
                         ? _actionSelectedColor
                         : _actionNormalColor;
-                    string text = actions[j];
-
-                    if (isActionSelected)
-                        text = $"[ {text} ]";
-
+                    string text = isActionSelected ? $"[ {actions[j]} ]" : actions[j];
                     DrawScaledString(spriteBatch, text, pos, actionColor);
                     pos.Y += actionSpacing;
                 }
             }
             else
             {
-                // Preview tenue de acciones
+                // Preview
                 for (int j = 0; j < actions.Length; j++)
                 {
                     DrawScaledString(spriteBatch, actions[j], pos, Color.Gray * 0.5f);
                     pos.Y += actionSpacing;
                 }
             }
-
             pos.Y += 10;
             return pos;
         }
@@ -554,10 +591,14 @@ namespace Sequence_Break
             DrawBorder(spriteBatch, descRect, _textColorHeader, 1);
 
             ItemData item = SelectedItemData;
-
             Vector2 statsPos = new Vector2(descRect.X + 20, descRect.Y + 20);
-            string statText =
-                (item.Damage > 0) ? $"Fuerza: {item.Damage}" : $"Cantidad: {item.CurrentAmmo}";
+
+            string statText = "";
+            if (item.Damage > 0)
+                statText = $"Efecto: {item.Damage}";
+            else
+                statText = "Objeto Clave";
+
             DrawScaledString(spriteBatch, statText, statsPos, _highlightColor);
 
             int textStartY = (int)statsPos.Y + 35;

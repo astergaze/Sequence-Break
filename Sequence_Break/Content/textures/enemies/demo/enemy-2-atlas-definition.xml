@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+  <Texture>textures/enemies/demo/enemy-2</Texture>
+  <Regions>
+    <Region name="enemy-1" x="110" y="145" width="36" height="42" />
+    <Region name="enemy-2" x="147" y="146" width="36" height="42" />
+    <Region name="enemy-3" x="0" y="189" width="36" height="42" />
+    <Region name="enemy-4" x="37" y="189" width="35" height="41" />
+  </Regions>
+  <Animations>
+    <Animation name="enemy-attack" delay="150">
+      <Frame region="enemy-2" />
+      <Frame region="enemy-3" />
+      <Frame region="enemy-4" />
+    </Animation>
+    <Animation name="enemy-idle" delay="150">
+      <Frame region="enemy-1" />
+      <Frame region="enemy-2" />
+    </Animation>
+  </Animations>
+</TextureAtlas>

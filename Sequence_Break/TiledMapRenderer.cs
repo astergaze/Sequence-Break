@@ -11,16 +11,22 @@ namespace Sequence_Break
 {
     public class TiledMapRenderer
     {
+        // --- ESTRUCTURA DE DATOS PARA ENEMIGOS (NECESARIA PARA CASESCREEN) ---
+        public struct EnemyData
+        {
+            public int Id;
+            public List<Vector2> Path;
+            public float Speed;
+            public float VisionRange;
+        }
+
+        // ---------------------------------------------------------------------
+
         private TmxMap _map;
         private int _tileWidth;
         private int _tileHeight;
 
-        // Diccionario de texturas.
-        // La "Key" (clave) es el FirstGid del tileset, que nos dice qué tiles le pertenecen.
-        // El "Value" (valor) es la textura (imagen PNG) cargada.
         private Dictionary<int, Texture2D> _tilesetTextures;
-
-        // También necesitamos un diccionario para guardar el "ancho en tiles" de cada textura
         private Dictionary<Texture2D, int> _textureTilesWide;
 
         // --- Constantes para las flags de Tiled ---
@@ -35,34 +41,21 @@ namespace Sequence_Break
             string tilesetFolderInContent
         )
         {
-            // 1. Carga los datos del mapa
             _map = new TmxMap(mapPath);
-
-            // 2. Guarda datos del mapa
             _tileWidth = _map.TileWidth;
             _tileHeight = _map.TileHeight;
 
-            // 3. Inicializa los diccionarios
             _tilesetTextures = new Dictionary<int, Texture2D>();
             _textureTilesWide = new Dictionary<Texture2D, int>();
 
-            // 4. Itera sobre cada tileset que el mapa usa
             foreach (var tileset in _map.Tilesets)
             {
-                // Tiled guarda la ruta a la imagen, ej: "../textures/RecepcionTileset.png"
-                // Nosotros solo queremos el nombre del archivo: "RecepcionTileset"
                 string textureName = Path.GetFileNameWithoutExtension(tileset.Image.Source);
-
-                // Construimos la ruta de MonoGame Content, ej: "maps/demo/textures/RecepcionTileset"
                 string contentPath = $"{tilesetFolderInContent}/{textureName}";
 
-                // Cargamos la textura
                 Texture2D texture = content.Load<Texture2D>(contentPath);
 
-                // La guardamos en el diccionario, usando su FirstGid como clave
                 _tilesetTextures.Add(tileset.FirstGid, texture);
-
-                // Guardamos el cálculo de su "ancho en tiles"
                 _textureTilesWide.Add(texture, texture.Width / _tileWidth);
             }
         }
@@ -86,14 +79,9 @@ namespace Sequence_Break
                 foreach (var tile in tileLayer.Tiles)
                 {
                     if (tile.Gid == 0)
-                    {
                         continue;
-                    }
 
-                    // 1. Obtenemos el GID "crudo" (con flags)
                     uint rawGid = (uint)tile.Gid;
-
-                    // 2. Limpiamos las flags para obtener el GID de índice
                     uint cleanGid =
                         rawGid
                         & ~(
@@ -102,23 +90,17 @@ namespace Sequence_Break
                             | FLIPPED_DIAGONALLY_FLAG
                         );
 
-                    // 3. ver que textura usar
-                    // Buscamos en nuestro diccionario la clave (FirstGid) más alta
-                    // que sea menor o igual a nuestro cleanGid.
                     int firstGid = _tilesetTextures
                         .Keys.OrderByDescending(k => k)
                         .FirstOrDefault(k => cleanGid >= k);
 
                     if (firstGid == 0)
-                        continue; // No se encontró textura para este GID
+                        continue;
 
                     Texture2D texture = _tilesetTextures[firstGid];
                     int tilesetTilesWide = _textureTilesWide[texture];
 
-                    // 4. Calculamos el ID local del tile (relativo a su propio tileset)
                     int tileGid = (int)cleanGid - firstGid;
-
-                    // 5. Calculamos el SourceRectangle
                     int sourceRectX = (tileGid % tilesetTilesWide) * _tileWidth;
                     int sourceRectY = (tileGid / tilesetTilesWide) * _tileHeight;
                     Rectangle sourceRect = new Rectangle(
@@ -128,7 +110,6 @@ namespace Sequence_Break
                         _tileHeight
                     );
 
-                    // 6. Aplicamos efectos
                     SpriteEffects effects = SpriteEffects.None;
                     float rotation = 0f;
                     Vector2 origin = Vector2.Zero;
@@ -153,16 +134,11 @@ namespace Sequence_Break
                     else
                     {
                         if (tile.HorizontalFlip)
-                        {
                             effects |= SpriteEffects.FlipHorizontally;
-                        }
                         if (tile.VerticalFlip)
-                        {
                             effects |= SpriteEffects.FlipVertically;
-                        }
                     }
 
-                    // 7. Ajustamos el Dibujo para Rotación
                     int screenX = tile.X * _tileWidth;
                     int screenY = tile.Y * _tileHeight;
                     Vector2 drawPosition;
@@ -176,7 +152,6 @@ namespace Sequence_Break
                         drawPosition = new Vector2(screenX, screenY);
                     }
 
-                    // 8. dibuja el tile
                     spriteBatch.Draw(
                         texture,
                         drawPosition,
@@ -190,7 +165,6 @@ namespace Sequence_Break
                     );
                 }
             }
-
             spriteBatch.End();
         }
 
@@ -200,9 +174,6 @@ namespace Sequence_Break
 
             if (!_map.ObjectGroups.Contains("Collisions"))
             {
-                Console.WriteLine(
-                    "ADVERTENCIA: El mapa no contiene una capa de objetos llamada 'Collisions'."
-                );
                 return collisionBarriers;
             }
 
@@ -233,15 +204,21 @@ namespace Sequence_Break
 
             foreach (var obj in objectGroup.Objects)
             {
-                if (!obj.Properties.TryGetValue("Name", out string name))
+                // CORRECCION: Priorizamos el nombre nativo de Tiled.
+                string name = obj.Name;
+                if (string.IsNullOrEmpty(name))
                 {
-                    Console.WriteLine(
-                        $"ADVERTENCIA: Objeto de interaccion en ({obj.X}, {obj.Y}) no tiene propiedad 'Name'."
-                    );
-                    continue;
+                    // Fallback a Custom Properties
+                    if (!obj.Properties.TryGetValue("Name", out name))
+                    {
+                        // Si no tiene nombre en ningun lado, lo saltamos
+                        continue;
+                    }
                 }
+
                 obj.Properties.TryGetValue("TargetMap", out string targetMap);
                 obj.Properties.TryGetValue("TargetSpawn", out string targetSpawn);
+                obj.Properties.TryGetValue("Message", out string message);
 
                 const int padding = 8;
                 Rectangle triggerZone = new Rectangle(
@@ -259,6 +236,7 @@ namespace Sequence_Break
                         TriggerZone = triggerZone,
                         TargetMap = targetMap,
                         TargetSpawn = targetSpawn,
+                        Message = message,
                     }
                 );
             }
@@ -278,7 +256,14 @@ namespace Sequence_Break
             var objectGroup = _map.ObjectGroups["Spawns"];
             foreach (var obj in objectGroup.Objects)
             {
-                if (obj.Properties.TryGetValue("Name", out string name) && name == spawnName)
+                // CORRECCION: Priorizamos el nombre nativo.
+                string name = obj.Name;
+                if (string.IsNullOrEmpty(name))
+                {
+                    obj.Properties.TryGetValue("Name", out name);
+                }
+
+                if (name == spawnName)
                 {
                     return new Vector2((float)obj.X, (float)obj.Y);
                 }
@@ -289,5 +274,52 @@ namespace Sequence_Break
             );
             return Vector2.Zero;
         }
+
+        // --- NUEVO METODO: Extraer configuración de enemigos ---
+        // Esto permite leer los paths sin exponer _map como publico
+        public List<EnemyData> GetEnemiesConfiguration(string layerName)
+        {
+            var enemiesData = new List<EnemyData>();
+
+            if (!_map.ObjectGroups.Contains(layerName))
+            {
+                return enemiesData;
+            }
+
+            var enemyLayer = _map.ObjectGroups[layerName];
+
+            foreach (var obj in enemyLayer.Objects)
+            {
+                if (obj.Points == null || obj.Points.Count == 0)
+                    continue;
+
+                float speed = 2.0f;
+                if (obj.Properties.ContainsKey("speed"))
+                    float.TryParse(obj.Properties["speed"], out speed);
+
+                float vision = 150.0f;
+                if (obj.Properties.ContainsKey("vision"))
+                    float.TryParse(obj.Properties["vision"], out vision);
+
+                List<Vector2> path = new List<Vector2>();
+                foreach (var p in obj.Points)
+                {
+                    path.Add(new Vector2((float)(obj.X + p.X), (float)(obj.Y + p.Y)));
+                }
+
+                enemiesData.Add(
+                    new EnemyData
+                    {
+                        Id = obj.Id, // <--- GUARDAMOS EL ID UNICO DE TILED
+                        Path = path,
+                        Speed = speed,
+                        VisionRange = vision,
+                    }
+                );
+            }
+
+            return enemiesData;
+        }
+        // --------------------------------------------------------
     }
 }

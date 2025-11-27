@@ -130,12 +130,12 @@
   </object>
   <object id="23" x="704" y="576" width="64" height="64">
    <properties>
-    <property name="Name" value="Chest"/>
+    <property name="Name" value="Chest_Curas"/>
    </properties>
   </object>
   <object id="24" x="768" y="576" width="64" height="64">
    <properties>
-    <property name="Name" value="Chest"/>
+    <property name="Name" value="Chest_Cordura"/>
    </properties>
   </object>
   <object id="25" x="448" y="576" width="64" height="64">
@@ -150,7 +150,7 @@
   </object>
  </objectgroup>
  <objectgroup id="7" name="Spawns">
-  <object id="27" x="128" y="384">
+  <object id="27" x="128" y="320">
    <properties>
     <property name="Name" value="SpawnFromMainHall"/>
    </properties>

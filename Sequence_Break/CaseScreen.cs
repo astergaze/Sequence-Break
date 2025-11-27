@@ -17,8 +17,9 @@ namespace Sequence_Break
         {
             public string Name;
             public Rectangle TriggerZone;
-            public string TargetMap; // El mapa al que nos teletransporta
-            public string TargetSpawn; // El punto de spawn en ese nuevo mapa
+            public string TargetMap;
+            public string TargetSpawn;
+            public string Message;
         }
 
         // Variables de Specter
@@ -29,6 +30,21 @@ namespace Sequence_Break
         private AnimatedSprite _specterCurrent;
         private Vector2 _specterPosition;
         private bool _isMoving;
+
+        // --- VARIABLES DEL JEFE ---
+        private AnimatedSprite _bossIdle;
+        private Vector2 _bossPosition;
+        private bool _bossActive;
+
+        // --- VARIABLES DE ENEMIGOS COMUNES ---
+        private List<Enemy> _enemies;
+
+        // Los 3 atlas necesarios para la animacion direccional
+        private TextureAtlas _enemyAtlasBack;
+        private TextureAtlas _enemyAtlasFront;
+        private TextureAtlas _enemyAtlasSide;
+
+        // -------------------------------------
 
         // Variables de Control
         private const float MOVEMENT_SPEED = 5.0f;
@@ -49,14 +65,14 @@ namespace Sequence_Break
         private string _initialMap;
         private Vector2 _initialSpawnPoint;
 
-        // Textura para Debug (optimizada)
+        // Textura para Debug
         private Texture2D _pixelTexture;
 
         // UI
         private InteractionPanel _interactionPanel;
         private SpriteFont _uiFont;
         private TextureAtlas _uiAtlas;
-        private string _currentInteractionName = string.Empty; // Para el evento de opciones
+        private string _currentInteractionName = string.Empty;
 
         // Camara
         private Matrix _cameraTransform;
@@ -67,15 +83,13 @@ namespace Sequence_Break
         // Variable del inventario
         private InventoryMenu _inventoryMenu;
 
-        // Constructor por defecto
         public CaseScreen(Game1 game)
             : base(game)
         {
             _initialMap = "Lobby";
-            _initialSpawnPoint = new Vector2(600, 750); // spawn por defecto
+            _initialSpawnPoint = new Vector2(600, 750);
         }
 
-        // Constructor (usado para VOLVER del combate)
         public CaseScreen(Game1 game, string mapToLoad, Vector2 positionToSpawn)
             : base(game)
         {
@@ -85,7 +99,7 @@ namespace Sequence_Break
 
         public override void LoadContent()
         {
-            // cargar sprites de specter
+            // --- CARGA DE SPECTER ---
             TextureAtlas atlasFront = TextureAtlas.FromFile(
                 Content,
                 "textures/Specter-front-atlas-definition.xml"
@@ -116,21 +130,49 @@ namespace Sequence_Break
 
             _specterCurrent = _specterWalkFront;
 
-            // Inicializar Listas
+            // --- CARGA DE JEFE Y ENEMIGOS ---
+            try
+            {
+                // 1. Carga del Jefe
+                TextureAtlas bossAtlas = TextureAtlas.FromFile(
+                    Content,
+                    "textures/enemies/demo/enemy-2-atlas-definition.xml"
+                );
+                _bossIdle = bossAtlas.CreateAnimatedSprite("enemy-idle");
+                _bossIdle.Scale = new Vector2(PLAYER_SCALE, PLAYER_SCALE);
+
+                // 2. Carga de Enemigos Comunes (3 Atlas distintos)
+                _enemyAtlasBack = TextureAtlas.FromFile(
+                    Content,
+                    "textures/enemies/demo/enemy-1-atlas-w-b.xml"
+                );
+                _enemyAtlasFront = TextureAtlas.FromFile(
+                    Content,
+                    "textures/enemies/demo/enemy-1-atlas-w-f.xml"
+                );
+                _enemyAtlasSide = TextureAtlas.FromFile(
+                    Content,
+                    "textures/enemies/demo/enemy-1-atlas-w-side.xml"
+                );
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error cargando assets de enemigos: {ex.Message}");
+                _bossIdle = null;
+                // Si falla, dejamos los atlas en null
+            }
+
             _collisionBarriers = new List<Rectangle>();
             _interactableObjects = new List<InteractableObject>();
+            _enemies = new List<Enemy>();
 
-            // Cargar el Mapa Inicial
-            LoadMap(_initialMap); // Usa la variable inicial
+            LoadMap(_initialMap);
 
-            // Posición de Spawn
-            _specterPosition = _initialSpawnPoint; // Usa la variable inicial
+            _specterPosition = _initialSpawnPoint;
 
-            // Crear la textura de píxel para Debug
             _pixelTexture = new Texture2D(GraphicsDevice, 1, 1);
             _pixelTexture.SetData(new[] { Color.White });
 
-            // Cargar Assets de UI
             try
             {
                 _uiFont = Content.Load<SpriteFont>("fonts/IBMPlexMono");
@@ -139,30 +181,22 @@ namespace Sequence_Break
                     "Interface/Combat/interface-combat-atlas-definition.xml"
                 );
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(
-                    $"Error cargando assets de UI para InteractionPanel: {ex.Message}"
-                );
                 throw;
             }
 
-            // Inicializar Panel de Interacción
             _interactionPanel = new InteractionPanel(_uiFont, _uiAtlas, GraphicsDevice);
-            _interactionPanel.OnOptionSelected += HandleInteractionChoice; // Suscribirse al evento
+            _interactionPanel.OnOptionSelected += HandleInteractionChoice;
 
             _previousKeyboardState = Keyboard.GetState();
-            // Inicializar el PauseMenu
-            // Pasamos 'this' para que el menu sepa que esta es la pantalla actual
             _pauseMenu = new PauseMenu(_game, this, _uiFont, GraphicsDevice);
-            // Inicializar el inventario
             _inventoryMenu = new InventoryMenu(_game, _uiFont, GraphicsDevice);
         }
 
         private void LoadMap(string mapName)
         {
             _currentMapName = mapName;
-
             string mapFileSystemPath = Path.Combine(
                 AppContext.BaseDirectory,
                 $"Content/maps/demo/{mapName}.tmx"
@@ -173,6 +207,65 @@ namespace Sequence_Break
 
             _collisionBarriers = _mapRenderer.GetCollisionRectangles();
             _interactableObjects = _mapRenderer.GetInteractableObjects();
+
+            // --- LOGICA SPAWN DEL JEFE ---
+            _bossActive = false;
+            foreach (var obj in _interactableObjects)
+            {
+                if (obj.Name == "BossSpawn")
+                {
+                    _bossPosition = new Vector2(obj.TriggerZone.X, obj.TriggerZone.Y);
+                    _bossActive = true;
+                    if (_bossIdle != null)
+                    {
+                        float spriteHeight = 42 * PLAYER_SCALE;
+                        _bossPosition.Y -= spriteHeight;
+                    }
+                }
+            }
+
+            // --- LOGICA SPAWN ENEMIGOS COMUNES ---
+            _enemies.Clear();
+
+            // Obtenemos la configuracion de la capa "Enemies"
+            var enemiesData = _mapRenderer.GetEnemiesConfiguration("Enemies");
+
+            // Verificamos que los 3 atlas se hayan cargado correctamente
+            if (_enemyAtlasBack != null && _enemyAtlasFront != null && _enemyAtlasSide != null)
+            {
+                foreach (var data in enemiesData)
+                {
+                    // *** PERSISTENCIA ***
+                    // Si el enemigo con este ID ya esta en la lista de muertos, NO lo creamos
+                    if (PlayerStatus.IsEnemyDefeated(_currentMapName, data.Id))
+                    {
+                        continue;
+                    }
+
+                    // Creamos los 3 sprites necesarios para CADA enemigo
+                    AnimatedSprite sBack = _enemyAtlasBack.CreateAnimatedSprite("enemy-walk-bw");
+                    sBack.Scale = new Vector2(PLAYER_SCALE, PLAYER_SCALE);
+
+                    AnimatedSprite sFront = _enemyAtlasFront.CreateAnimatedSprite("enemy-walk-fw");
+                    sFront.Scale = new Vector2(PLAYER_SCALE, PLAYER_SCALE);
+
+                    AnimatedSprite sSide = _enemyAtlasSide.CreateAnimatedSprite("enemy-walk-side");
+                    sSide.Scale = new Vector2(PLAYER_SCALE, PLAYER_SCALE);
+
+                    // Instanciamos el enemigo pasandole el ID y los 3 sprites
+                    Enemy newEnemy = new Enemy(
+                        data.Id, // ID Unico de Tiled
+                        sBack,
+                        sFront,
+                        sSide,
+                        data.Path,
+                        data.Speed,
+                        data.VisionRange
+                    );
+                    _enemies.Add(newEnemy);
+                }
+            }
+            Console.WriteLine($"DEBUG: Se cargaron {_enemies.Count} enemigos vivos en patrulla.");
         }
 
         private Rectangle GetPlayerBox(Vector2 position)
@@ -191,9 +284,7 @@ namespace Sequence_Break
             foreach (Rectangle barrier in _collisionBarriers)
             {
                 if (playerBox.Intersects(barrier))
-                {
                     return true;
-                }
             }
             return false;
         }
@@ -201,32 +292,72 @@ namespace Sequence_Break
         private void CheckForInteraction()
         {
             Rectangle playerBox = GetPlayerBox(_specterPosition);
-            foreach (InteractableObject obj in _interactableObjects)
+
+            if (_bossActive)
             {
-                if (playerBox.Intersects(obj.TriggerZone))
+                int bossW = (int)(36 * PLAYER_SCALE);
+                int bossH = (int)(42 * PLAYER_SCALE);
+                Rectangle bossRect = new Rectangle(
+                    (int)_bossPosition.X - 20,
+                    (int)_bossPosition.Y - 20,
+                    bossW + 40,
+                    bossH + 40
+                );
+
+                if (playerBox.Intersects(bossRect))
                 {
-                    PerformInteraction(obj);
+                    _game.IsMouseVisible = false;
+                    // El combate de jefe puede usar un ID especial como -1 o 9999
+                    _game.ChangeScreen(
+                        new CombatScreen(
+                            _game,
+                            _currentMapName,
+                            _specterPosition,
+                            enemyId: -1,
+                            enemyType: "Boss"
+                        )
+                    );
+                    return;
+                }
+            }
+
+            for (int i = 0; i < _interactableObjects.Count; i++)
+            {
+                if (_interactableObjects[i].Name == "BossSpawn")
+                    continue;
+                if (playerBox.Intersects(_interactableObjects[i].TriggerZone))
+                {
+                    PerformInteraction(i);
                     break;
                 }
             }
         }
 
-        // Lógica de Interacción del Nivel
-        private void PerformInteraction(InteractableObject interactable)
+        private void PerformInteraction(int index)
         {
-            // Guardamos el nombre para el event handler
+            InteractableObject interactable = _interactableObjects[index];
             _currentInteractionName = interactable.Name;
 
-            // Tepearse (Puertas)
             if (interactable.TargetMap != null && interactable.TargetSpawn != null)
             {
-                Console.WriteLine(
-                    $"Interactuaste con: {interactable.Name}. Cargando mapa: {interactable.TargetMap}..."
-                );
+                if (interactable.Name == "DoorBossRoom")
+                {
+                    bool hasKey = PlayerStatus.KeyItems.Exists(item =>
+                        item.Name == "Llave de la sala de experimentacion"
+                    );
+                    if (!hasKey)
+                    {
+                        _interactionPanel.Show(
+                            "La puerta esta cerrada. Necesitas la llave de experimentacion.",
+                            null,
+                            "Puerta"
+                        );
+                        return;
+                    }
+                }
 
                 LoadMap(interactable.TargetMap);
                 _specterPosition = _mapRenderer.GetSpawnPoint(interactable.TargetSpawn);
-
                 _cameraTransform = Matrix.CreateTranslation(
                     -_specterPosition.X + (GraphicsDevice.Viewport.Width / 2),
                     -_specterPosition.Y + (GraphicsDevice.Viewport.Height / 2),
@@ -235,105 +366,180 @@ namespace Sequence_Break
                 return;
             }
 
-            // Objetos comunes
+            bool alreadyInteracted = PlayerStatus.HasInteracted(interactable.Name);
+
+            // --- OBJETOS HARDCODEADOS ---
             switch (interactable.Name)
             {
-                case "lore_1":
+                case "FileCabinet":
                     _interactionPanel.Show(
-                        "Las paredes están cubiertas de anotaciones crípticas. 'La disonancia es la clave', 'No confíes en el reflejo'. El Alquimista estuvo aquí, y no estaba solo.",
-                        null, // Sin opciones
-                        "Pista"
+                        "Un monton de archivos, ninguno que me interese.",
+                        null,
+                        "Archivador"
                     );
                     break;
-
-                case "npc_1":
-                    var options = new List<string> { "Preguntar por el Alquimista", "Ignorar" };
+                case "DeskDrawer":
+                    _interactionPanel.Show("Esta cerrado con llave.", null, "Cajon");
+                    break;
+                case "WaitingChairs":
                     _interactionPanel.Show(
-                        "El hombre te mira con ojos vacíos. '¿Tú también lo buscas? Ten cuidado, lo que yace aquí... no le gusta que lo despierten.'",
-                        options,
-                        "Hombre Aterrado"
+                        "Sillas para una sala de espera...",
+                        null,
+                        "Sala de Espera"
                     );
                     break;
+                case "DeskWithPapers":
+                    _interactionPanel.Show("Un escritorio lleno de papeles...", null, null);
+                    break;
+                case "DeskPapers":
+                    _interactionPanel.Show("Mas papeles.", null, null);
+                    break;
+                case "Desk":
+                    _interactionPanel.Show("Un escritorio.", null, null);
+                    break;
+                case "PapersOnDesk":
+                    _interactionPanel.Show("Mas papeles en el escritorio...", null, "Notas");
+                    break;
+                case "NotImportantComputer":
+                    _interactionPanel.Show("No enciende.", null, "PC");
+                    break;
+                case "ExpBed":
+                    _interactionPanel.Show("Correas y manchas secas.", null, "Camilla");
+                    break;
+                case "VitalsMonitor":
+                    _interactionPanel.Show("Linea plana continua...", null, "Monitor");
+                    break;
+                case "ContainedExperiment":
+                    _interactionPanel.Show("Algo flota en el liquido verde.", null, "Contenedor");
+                    break;
 
-                case "hub_return":
-                    _game.IsMouseVisible = true;
-                    _game.ChangeScreen(new GameplayScreen(_game));
+                case "ImportantComputer":
+                    if (!alreadyInteracted)
+                    {
+                        PlayerStatus.AddKeyItem(
+                            "Llave de la sala de experimentacion",
+                            "Permite entrar a la sala de experimentacion"
+                        );
+                        _interactionPanel.Show(
+                            "Encontraste la Llave de la sala de experimentacion!",
+                            null,
+                            "Sistema"
+                        );
+                        PlayerStatus.RegisterInteraction(interactable.Name);
+                    }
+                    else
+                        _interactionPanel.Show("La computadora sigue encendida...", null, "PC");
+                    break;
+
+                case "Chest_Curas":
+                    if (!alreadyInteracted)
+                    {
+                        PlayerStatus.AddItem("Paquete de curitas", "Cura 30 HP.", 1, 30, "Heal");
+                        _interactionPanel.Show("Encontraste suministros medicos!", null, "Sistema");
+                        PlayerStatus.RegisterInteraction(interactable.Name);
+                    }
+                    else
+                        _interactionPanel.Show("El botiquin esta vacio.", null, null);
+                    break;
+
+                case "Chest_Cordura":
+                    if (!alreadyInteracted)
+                    {
+                        PlayerStatus.AddItem(
+                            "Pastillas de cordura",
+                            "Calma la mente.",
+                            2,
+                            20,
+                            "Sanity"
+                        );
+                        _interactionPanel.Show("Encontraste medicacion.", null, "Sistema");
+                        PlayerStatus.RegisterInteraction(interactable.Name);
+                    }
+                    else
+                        _interactionPanel.Show("Solo queda polvo.", null, null);
+                    break;
+
+                case "ExperimentationTools":
+                    _interactionPanel.Show(
+                        "Elixires y herramientas para experimentacion... Sera mejor no tocar eso.",
+                        null,
+                        "Luka Specter"
+                    );
+
                     break;
 
                 default:
-                    _interactionPanel.Show(
-                        $"Interactuaste con: {interactable.Name} (sin accion definida)",
-                        null,
-                        null
-                    );
+                    if (!string.IsNullOrEmpty(interactable.Message))
+                        _interactionPanel.Show(interactable.Message, null, null);
                     break;
             }
         }
 
-        /// Maneja la respuesta del jugador desde el InteractionPanel.
         private void HandleInteractionChoice(int optionIndex)
         {
-            // Usamos la variable _currentInteractionName para saber a qué respondía el jugador
-            switch (_currentInteractionName)
-            {
-                case "npc_1":
-                    if (optionIndex == 0) // "Preguntar por el Alquimista"
-                    {
-                        // Podríamos mostrar otro diálogo encadenado
-                        _interactionPanel.Show(
-                            "'Se fue por ese pasillo... dijo algo sobre... 'romper la secuencia'. No sé qué signifique, y no quiero saberlo.'",
-                            null,
-                            "Hombre Aterrado"
-                        );
-                    }
-                    else // "Ignorar"
-                    {
-                        // No hacer nada, el panel ya se cerró
-                    }
-                    break;
-
-                // Añadir más casos aca para otras interacciones con opciones
-            }
-
-            // Limpiamos la interacción actual
             _currentInteractionName = string.Empty;
         }
 
         public override void Update(GameTime gameTime)
         {
-            // Actualizar el menu primero
             _pauseMenu.Update(gameTime);
-
-            // si esta pausado, no ejecutamos nada mas
             if (_pauseMenu.IsActive)
                 return;
 
+            if (_bossActive && _bossIdle != null)
+                _bossIdle.Update(gameTime);
+
+            foreach (var enemy in _enemies)
+            {
+                enemy.Update(gameTime, _specterPosition);
+
+                // Check Colision Combate (Automatico)
+                if (GetPlayerBox(_specterPosition).Intersects(enemy.BoundingBox))
+                {
+                    Console.WriteLine($"DEBUG: Combate iniciado con enemigo ID {enemy.Id}");
+                    _game.IsMouseVisible = false;
+
+                    // CAMBIO: Pasamos el tipo "Common"
+                    _game.ChangeScreen(
+                        new CombatScreen(
+                            _game,
+                            _currentMapName,
+                            _specterPosition,
+                            enemy.Id,
+                            enemyType: "Common"
+                        )
+                    );
+                    return;
+                }
+            }
+
             KeyboardState currentKeyboardState = Keyboard.GetState();
-            // Abrir inventario
             if (
                 (
                     currentKeyboardState.IsKeyDown(Keys.Tab)
                     && !_previousKeyboardState.IsKeyDown(Keys.Tab)
                 )
+                || (
+                    currentKeyboardState.IsKeyDown(Keys.I)
+                    && !_previousKeyboardState.IsKeyDown(Keys.I)
+                )
             )
             {
                 _inventoryMenu.Toggle();
             }
-            // Si el inventario abierto, actualizamos y se bloquea el resto del juego
+
             if (_inventoryMenu.IsActive)
             {
                 _inventoryMenu.Update(gameTime);
-                _previousKeyboardState = currentKeyboardState; // Actualizar estado de teclado
-                return; // Salir para no mover al personaje
+                _previousKeyboardState = currentKeyboardState;
+                return;
             }
+
             if (
                 currentKeyboardState.IsKeyDown(Keys.Escape)
                 && !_previousKeyboardState.IsKeyDown(Keys.Escape)
             )
-            {
                 _pauseMenu.Show();
-            }
-
             if (
                 currentKeyboardState.IsKeyDown(Keys.F11)
                 && !_previousKeyboardState.IsKeyDown(Keys.F11)
@@ -343,20 +549,14 @@ namespace Sequence_Break
                 Core.Graphics.ApplyChanges();
             }
 
-            // Si el panel de interacción está activo, él toma el control.
-            // Toda la lógica de movimiento y juego se salta.
             if (_interactionPanel.IsActive)
             {
                 _interactionPanel.Update(gameTime);
             }
             else
             {
-                // El panel NO está activo, el jugador puede moverse e interactuar.
-
-                // Movimiento y Colisión
                 _isMoving = false;
                 Vector2 movement = Vector2.Zero;
-
                 if (
                     currentKeyboardState.IsKeyDown(Keys.W)
                     || currentKeyboardState.IsKeyDown(Keys.Up)
@@ -393,90 +593,71 @@ namespace Sequence_Break
 
                 if (movement != Vector2.Zero)
                     movement.Normalize();
-
                 movement *= MOVEMENT_SPEED;
 
                 Vector2 newPosition = _specterPosition;
                 newPosition.X += movement.X;
-                Rectangle playerBoxX = GetPlayerBox(newPosition);
-                if (HasCollision(playerBoxX))
-                {
+                if (HasCollision(GetPlayerBox(newPosition)))
                     newPosition.X = _specterPosition.X;
-                }
-
                 newPosition.Y += movement.Y;
-                Rectangle playerBoxY = GetPlayerBox(newPosition);
-                if (HasCollision(playerBoxY))
-                {
+                if (HasCollision(GetPlayerBox(newPosition)))
                     newPosition.Y = _specterPosition.Y;
-                }
-
                 _specterPosition = newPosition;
 
-                // Interacción
                 if (
                     currentKeyboardState.IsKeyDown(Keys.E)
                     && !_previousKeyboardState.IsKeyDown(Keys.E)
                 )
-                {
                     CheckForInteraction();
-                }
 
-                // Test de Combate
-                if (
-                    currentKeyboardState.IsKeyDown(Keys.C)
-                    && !_previousKeyboardState.IsKeyDown(Keys.C)
-                )
-                {
-                    Console.WriteLine("Iniciando combate de prueba...");
-                    _game.IsMouseVisible = false;
-                    _game.ChangeScreen(new CombatScreen(_game, _currentMapName, _specterPosition));
-                    return;
-                }
-
-                // Actualización de Animación
                 if (_isMoving)
-                {
                     _specterCurrent.Update(gameTime);
-                }
                 else
-                {
                     _specterCurrent.CurrentFrame = 0;
-                }
 
-                // Actualización de Cámara
                 _cameraTransform = Matrix.CreateTranslation(
                     -_specterPosition.X + (GraphicsDevice.Viewport.Width / 2),
                     -_specterPosition.Y + (GraphicsDevice.Viewport.Height / 2),
                     0
                 );
             }
-
             _previousKeyboardState = currentKeyboardState;
         }
 
         public override void Draw(GameTime gameTime)
         {
-            // Dibuja el Mapa (con cámara)
             _mapRenderer.Draw(SpriteBatch, _cameraTransform);
 
-            // Dibuja al Jugador (con cámara)
             SpriteBatch.Begin(
                 transformMatrix: _cameraTransform,
                 samplerState: SamplerState.PointClamp
             );
-            _specterCurrent.Draw(SpriteBatch, _specterPosition);
+
+            if (_bossActive)
+            {
+                if (_bossIdle != null)
+                    _bossIdle.Draw(SpriteBatch, _bossPosition);
+                else
+                    SpriteBatch.Draw(
+                        _pixelTexture,
+                        new Rectangle((int)_bossPosition.X, (int)_bossPosition.Y, 50, 50),
+                        Color.Red
+                    );
+            }
+
+            foreach (var enemy in _enemies)
+            {
+                enemy.Draw(SpriteBatch);
+            }
+
+            Vector2 drawPos = new Vector2((int)_specterPosition.X, (int)_specterPosition.Y);
+            _specterCurrent.Draw(SpriteBatch, drawPos);
+
             SpriteBatch.End();
 
-            // Dibuja la UI (estática, sin cámara)
-            // Se dibuja en un lote separado para que esté encima de todo.
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             _interactionPanel.Draw(gameTime, SpriteBatch);
-            // Dibujar inventario
             _inventoryMenu.Draw(SpriteBatch);
-            SpriteBatch.End();
-            // Dibujar menu de pausa
-            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             _pauseMenu.Draw(SpriteBatch);
             SpriteBatch.End();
         }

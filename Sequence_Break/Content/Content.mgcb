@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin audio/mapSong.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/mapSong.mp3
+
 #begin audio/MaybeMain.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
@@ -99,6 +105,15 @@
 /processorParam:TextureFormat=Color
 /build:textures/combat/hit-spritesheet.png
 
+#begin textures/enemies/demo/enemy-1-atlas-w-b.xml
+/copy:textures/enemies/demo/enemy-1-atlas-w-b.xml
+
+#begin textures/enemies/demo/enemy-1-atlas-w-f.xml
+/copy:textures/enemies/demo/enemy-1-atlas-w-f.xml
+
+#begin textures/enemies/demo/enemy-1-atlas-w-side.xml
+/copy:textures/enemies/demo/enemy-1-atlas-w-side.xml
+
 #begin textures/enemies/demo/enemy-1-texture-atlas.xml
 /copy:textures/enemies/demo/enemy-1-texture-atlas.xml;textures/enemies/demo/enemy-1-atlas-definition.xml
 
@@ -113,6 +128,57 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:textures/enemies/demo/enemy-1.png
+
+#begin textures/enemies/demo/enemy-2-atlas-definition.xml
+/copy:textures/enemies/demo/enemy-2-atlas-definition.xml
+
+#begin textures/enemies/demo/enemy-2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/enemies/demo/enemy-2.png
+
+#begin textures/enemies/demo/enemy-f-l.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/enemies/demo/enemy-f-l.png
+
+#begin textures/enemies/demo/enemy-walking-backward.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/enemies/demo/enemy-walking-backward.png
+
+#begin textures/enemies/demo/enemy-walking-forward.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/enemies/demo/enemy-walking-forward.png
 
 #begin textures/Specter_back.png
 /importer:TextureImporter
