@@ -1,0 +1,13 @@
+C:\code\Sequence-Break\MonoGameLibrary\bin\Release\net9.0\MonoGameLibrary.deps.json
+C:\code\Sequence-Break\MonoGameLibrary\bin\Release\net9.0\MonoGameLibrary.dll
+C:\code\Sequence-Break\MonoGameLibrary\bin\Release\net9.0\MonoGameLibrary.pdb
+C:\code\Sequence-Break\MonoGameLibrary\obj\Release\net9.0\MonoGameLibrary.csproj.AssemblyReference.cache
+C:\code\Sequence-Break\MonoGameLibrary\obj\Release\net9.0\MonoGameLibrary.GeneratedMSBuildEditorConfig.editorconfig
+C:\code\Sequence-Break\MonoGameLibrary\obj\Release\net9.0\MonoGameLibrary.AssemblyInfoInputs.cache
+C:\code\Sequence-Break\MonoGameLibrary\obj\Release\net9.0\MonoGameLibrary.AssemblyInfo.cs
+C:\code\Sequence-Break\MonoGameLibrary\obj\Release\net9.0\MonoGameLibrary.csproj.CoreCompileInputs.cache
+C:\code\Sequence-Break\MonoGameLibrary\obj\Release\net9.0\MonoGameLibrary.sourcelink.json
+C:\code\Sequence-Break\MonoGameLibrary\obj\Release\net9.0\MonoGameLibrary.dll
+C:\code\Sequence-Break\MonoGameLibrary\obj\Release\net9.0\refint\MonoGameLibrary.dll
+C:\code\Sequence-Break\MonoGameLibrary\obj\Release\net9.0\MonoGameLibrary.pdb
+C:\code\Sequence-Break\MonoGameLibrary\obj\Release\net9.0\ref\MonoGameLibrary.dll
