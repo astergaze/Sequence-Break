@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json;
+using Microsoft.Xna.Framework; // Necesario para MathHelper
 
 namespace Sequence_Break
 {
@@ -9,11 +10,26 @@ namespace Sequence_Break
 
         public static SettingsData Data { get; private set; }
 
-        // El constructor estatico se llama solo la primera vez que se usa la clase
         static SettingsManager()
         {
             LoadSettings();
         }
+
+        // --- NUEVO CÓDIGO AÑADIDO ---
+        // Esta es la propiedad que tu método PlaySfx está intentando leer.
+        // Convierte el valor int (0 a 10) a float (0.0f a 1.0f)
+        public static float SFXVolume
+        {
+            get
+            {
+                // MathHelper.Clamp evita errores si alguien edita el JSON y pone un valor como 500
+                // MonoGame crashea si el volumen es mayor a 1.0f
+                float clampedVolume = MathHelper.Clamp(Data.SfxVolume, 0, 10);
+                return clampedVolume / 10f;
+            }
+        }
+
+        // -----------------------------
 
         public static void LoadSettings()
         {
@@ -29,12 +45,12 @@ namespace Sequence_Break
                     System.Console.WriteLine(
                         $"Error al cargar settings: {ex.Message}. Usando defaults."
                     );
-                    Data = new SettingsData(); // Carga fallida
+                    Data = new SettingsData();
                 }
             }
             else
             {
-                Data = new SettingsData(); // No existe, usa defaults
+                Data = new SettingsData();
             }
         }
 
@@ -54,10 +70,11 @@ namespace Sequence_Break
             }
         }
 
-        // Metodo para aplicar el volumen
         public static void ApplyMusicVolume()
         {
-            Microsoft.Xna.Framework.Media.MediaPlayer.Volume = Data.MusicVolume / 10f;
+            // Usamos MathHelper aquí también por seguridad
+            float clampedVolume = MathHelper.Clamp(Data.MusicVolume, 0, 10);
+            Microsoft.Xna.Framework.Media.MediaPlayer.Volume = clampedVolume / 10f;
         }
     }
 }

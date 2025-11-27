@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio; // NECESARIO PARA SFX
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media; // NECESARIO PARA LA MUSICA
+using Microsoft.Xna.Framework.Media; // NECESARIO PARA MUSICA
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 
@@ -71,8 +72,13 @@ namespace Sequence_Break
         private const float HIT_SCALE = 3.0f;
         private const int HIT_BASE_SIZE = 64;
 
-        // --- MUSICA (NUEVO) ---
+        // --- AUDIO ---
         private Song _combatMusic;
+
+        // Efectos de Sonido (SFX)
+        private SoundEffect _sfxAbility;
+        private SoundEffect _sfxGotHit;
+        private SoundEffect _sfxShoot;
 
         // --- COMBATE ---
         private bool _isPlayerAttacking = false;
@@ -204,18 +210,31 @@ namespace Sequence_Break
                 throw;
             }
 
+            // --- CARGAR SFX ---
+            try
+            {
+                _sfxAbility = Content.Load<SoundEffect>("audio/effects/sfx_ability");
+                _sfxGotHit = Content.Load<SoundEffect>("audio/effects/sfx_got_hit");
+                _sfxShoot = Content.Load<SoundEffect>("audio/effects/sfx_revolver_shoot");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error cargando SFX: {ex.Message}");
+            }
+            // ------------------
+
             // --- CONFIGURACION DINAMICA DEL ENEMIGO Y MUSICA ---
             string atlasPath;
             string enemyName;
             int hp;
-            string musicPath; // Variable para la musica
+            string musicPath;
 
             if (_enemyType == "Boss")
             {
                 atlasPath = "textures/enemies/demo/enemy-2-atlas-definition.xml";
                 enemyName = "Sujeto de Prueba 02";
                 hp = 200;
-                musicPath = "audio/battle"; // CAMBIA ESTO POR TU ARCHIVO DE MUSICA DE JEFE
+                musicPath = "audio/battle";
             }
             else
             {
@@ -223,7 +242,7 @@ namespace Sequence_Break
                 atlasPath = "textures/enemies/demo/enemy-1-texture-atlas.xml";
                 enemyName = "Disonancia";
                 hp = 80;
-                musicPath = "audio/battle"; // CAMBIA ESTO POR TU ARCHIVO DE MUSICA DE PELEA
+                musicPath = "audio/battle";
             }
 
             // --- CARGAR MUSICA ---
@@ -241,7 +260,6 @@ namespace Sequence_Break
             _enemyAtlas = TextureAtlas.FromFile(Content, atlasPath);
             AnimatedSprite enemyAnimatedSprite = _enemyAtlas.CreateAnimatedSprite("enemy-attack");
             enemyAnimatedSprite.Scale = new Vector2(ENEMY_SCALE, ENEMY_SCALE);
-            // -----------------------------------------
 
             _specterAttackAtlas = TextureAtlas.FromFile(
                 Content,
@@ -346,6 +364,19 @@ namespace Sequence_Break
             {
                 _enemyNextMove = EnemyIntent.Defend;
                 _enemyIntentText = "DEFENDER";
+            }
+        }
+
+        // Metodo helper para reproducir SFX con volumen global
+        private void PlaySfx(SoundEffect sfx)
+        {
+            if (sfx != null)
+            {
+                // Usamos CreateInstance() para poder controlar el volumen individualmente si fuera necesario,
+                // pero aqui aplicamos el volumen global de SettingsManager.
+                SoundEffectInstance instance = sfx.CreateInstance();
+                instance.Volume = SettingsManager.SFXVolume;
+                instance.Play();
             }
         }
 
@@ -584,6 +615,9 @@ namespace Sequence_Break
                     }
                     if (damageTaken)
                     {
+                        // SFX DE GOLPE RECIBIDO
+                        PlaySfx(_sfxGotHit);
+
                         _player.CurrentHP -= damageAmount;
                         PlayerStatus.ModifyHP(-damageAmount);
                     }
@@ -606,12 +640,10 @@ namespace Sequence_Break
                     // --- LOGICA DE SALIDA Y PERSISTENCIA ---
                     if (_enemyType == "Boss")
                     {
-                        // AL GANAR AL JEFE: Viaje a habitacion principal
                         _game.ChangeScreen(new GameplayScreen(_game));
                     }
                     else
                     {
-                        // AL GANAR A COMUN: Marcar como muerto y volver
                         if (_enemyId != -1)
                         {
                             PlayerStatus.MarkEnemyAsDefeated(_returnMapName, _enemyId);
@@ -654,7 +686,9 @@ namespace Sequence_Break
                 (kbs.IsKeyDown(Keys.Enter) && !_previousKeyboardState.IsKeyDown(Keys.Enter))
                 || (kbs.IsKeyDown(Keys.E) && !_previousKeyboardState.IsKeyDown(Keys.E))
             )
+            {
                 PerformPlayerAction();
+            }
         }
 
         private void HandleSkillMenuInput(KeyboardState kbs)
@@ -681,7 +715,9 @@ namespace Sequence_Break
                 (kbs.IsKeyDown(Keys.Enter) && !_previousKeyboardState.IsKeyDown(Keys.Enter))
                 || (kbs.IsKeyDown(Keys.E) && !_previousKeyboardState.IsKeyDown(Keys.E))
             )
+            {
                 PerformSkillAction();
+            }
             if (kbs.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape))
                 _currentState = CombatState.PlayerSelectAction;
         }
@@ -716,7 +752,9 @@ namespace Sequence_Break
                 (kbs.IsKeyDown(Keys.Enter) && !_previousKeyboardState.IsKeyDown(Keys.Enter))
                 || (kbs.IsKeyDown(Keys.E) && !_previousKeyboardState.IsKeyDown(Keys.E))
             )
+            {
                 PerformItemAction();
+            }
             if (kbs.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape))
                 _currentState = CombatState.PlayerSelectAction;
         }
@@ -729,6 +767,9 @@ namespace Sequence_Break
                 case "ATAQUE":
                     if (_player.Balas > 0)
                     {
+                        // SFX DE DISPARO
+                        PlaySfx(_sfxShoot);
+
                         _player.Balas--;
                         ItemData w = PlayerStatus.CurrentWeapon;
                         w.CurrentAmmo = _player.Balas;
@@ -799,6 +840,8 @@ namespace Sequence_Break
                 case "PREVER":
                     if (_player.CurrentCordura >= COST_PRECOGNITION)
                     {
+                        PlaySfx(_sfxAbility);
+
                         _player.CurrentCordura -= COST_PRECOGNITION;
                         PlayerStatus.ModifySanity(-COST_PRECOGNITION);
                         _precognitionTurns = 2;
@@ -818,6 +861,8 @@ namespace Sequence_Break
                 case "ESTASIS":
                     if (_player.CurrentCordura >= COST_STASIS)
                     {
+                        PlaySfx(_sfxAbility);
+
                         _player.CurrentCordura -= COST_STASIS;
                         PlayerStatus.ModifySanity(-COST_STASIS);
                         _stasisTurns = 4;
@@ -844,6 +889,8 @@ namespace Sequence_Break
                         );
                     else if (_player.CurrentCordura >= COST_RELOAD)
                     {
+                        PlaySfx(_sfxAbility);
+
                         _player.CurrentCordura -= COST_RELOAD;
                         PlayerStatus.ModifySanity(-COST_RELOAD);
                         _player.Balas = _player.MaxBalas;
@@ -866,6 +913,8 @@ namespace Sequence_Break
                 case "DESFASE":
                     if (_player.CurrentCordura >= COST_PHASE)
                     {
+                        PlaySfx(_sfxAbility);
+
                         _player.CurrentCordura -= COST_PHASE;
                         PlayerStatus.ModifySanity(-COST_PHASE);
                         _isPlayerPhased = true;
@@ -890,6 +939,9 @@ namespace Sequence_Break
 
         private void PerformItemAction()
         {
+            // SFX DE USO DE ITEM
+            PlaySfx(_sfxAbility);
+
             ItemData item = _combatInventory[_selectedItemIndex];
             string message = $"Usaste {item.Name}. ";
             if (item.Name == "Paquete de curitas" || item.Name == "Manzanas")

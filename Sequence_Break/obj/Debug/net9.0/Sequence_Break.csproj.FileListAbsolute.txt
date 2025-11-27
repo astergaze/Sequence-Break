@@ -93,3 +93,8 @@ C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\lobby.ogg
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\lobby.xnb
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\mapSong.ogg
 C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\mapSong.xnb
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\effects\sfx_ability.xnb
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\effects\sfx_got_hit.xnb
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\effects\sfx_menu_select.xnb
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\effects\sfx_menu_wave.xnb
+C:\code\Sequence-Break\Sequence_Break\bin\Debug\net9.0\Content\audio\effects\sfx_revolver_shoot.xnb

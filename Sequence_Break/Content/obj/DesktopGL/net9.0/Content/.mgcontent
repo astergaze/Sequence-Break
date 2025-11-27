@@ -5,6 +5,11 @@
   <Config />
   <SourceFiles>
     <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/battle.mp3</File>
+    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/effects/sfx_ability.wav</File>
+    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/effects/sfx_got_hit.wav</File>
+    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/effects/sfx_menu_select.wav</File>
+    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/effects/sfx_menu_wave.wav</File>
+    <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/effects/sfx_revolver_shoot.wav</File>
     <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/lobby.mp3</File>
     <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/mapSong.mp3</File>
     <File>C:/code/Sequence-Break/Sequence_Break/Content/audio/MaybeMain.mp3</File>
@@ -28,6 +33,11 @@
     <File>C:/code/Sequence-Break/Sequence_Break/Content/textures/Specter_shoot.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

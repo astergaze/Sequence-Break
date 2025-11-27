@@ -19,6 +19,36 @@
 /processorParam:Quality=Best
 /build:audio/battle.mp3
 
+#begin audio/effects/sfx_ability.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/effects/sfx_ability.wav
+
+#begin audio/effects/sfx_got_hit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/effects/sfx_got_hit.wav
+
+#begin audio/effects/sfx_menu_select.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/effects/sfx_menu_select.wav
+
+#begin audio/effects/sfx_menu_wave.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/effects/sfx_menu_wave.wav
+
+#begin audio/effects/sfx_revolver_shoot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/effects/sfx_revolver_shoot.wav
+
 #begin audio/lobby.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
