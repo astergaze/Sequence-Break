@@ -295,16 +295,48 @@ namespace Sequence_Break
             int boxY = (int)(position.Y + (spriteHeight * 0.1f));
             return new Rectangle(boxX, boxY, boxWidth, boxHeight);
         }
+private Rectangle GetBossBodyBox(Vector2 position)
+{
+    // Las dimensiones del Boss (enemy-2) según el LoadMap
+    // Ancho: 36 * PLAYER_SCALE (108) | Alto: 42 * PLAYER_SCALE (126)
+    
+    float spriteWidth = 36 * PLAYER_SCALE;
+    float spriteHeight = 42 * PLAYER_SCALE;
+    
+    // Hitbox precisa para que el jugador no pase
+    int boxWidth = (int)(spriteWidth * 0.8f);
+    int boxHeight = (int)(spriteHeight * 0.8f);
+    
+    // Posiciona la caja en el centro inferior del sprite
+    int boxX = (int)(position.X + (spriteWidth * 0.1f));
+    int boxY = (int)(position.Y + (spriteHeight * 0.2f));
+    
+    return new Rectangle(boxX, boxY, boxWidth, boxHeight);
+}
 
-        private bool HasCollision(Rectangle playerBox)
-        {
-            foreach (Rectangle barrier in _collisionBarriers)
-            {
-                if (playerBox.Intersects(barrier))
-                    return true;
-            }
-            return false;
-        }
+// En la clase CaseScreen.cs
+
+private bool HasCollision(Rectangle playerBox)
+{
+    // --- NUEVA LÓGICA DE COLISIÓN DEL JEFE ---
+    if (_bossActive)
+    {
+        // Usamos la posición ajustada en LoadMap: _bossPosition.Y ya fue ajustada.
+        if (playerBox.Intersects(GetBossBodyBox(_bossPosition)))
+            return true;
+    }
+    // -----------------------------------------
+
+    foreach (Rectangle barrier in _collisionBarriers)
+    {
+        if (playerBox.Intersects(barrier))
+            return true;
+    }
+    return false;
+}
+        // En la clase CaseScreen.cs (Métodos auxiliares)
+
+
 
         private void CheckForInteraction()
         {
